@@ -1,8 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "node vercel-build.js",
-  "outputDirectory": "dist",
-  "framework": null,
   "cleanUrls": true,
   "trailingSlash": false
 }
