@@ -33,7 +33,7 @@ export function Projects() {
       <div className="mx-auto max-w-[1600px] px-6 md:px-12">
         <div className="reveal flex items-end justify-between">
           <div>
-            <p className="eyebrow">A collage of drawings.</p>
+            <p className="eyebrow">Collage</p>
             <h2 className="mt-6 font-serif text-[clamp(2.25rem,5vw,4.5rem)] leading-[1.05]">
               Selected <span style={{ color: "var(--gold)" }}>Works.</span>
             </h2>
