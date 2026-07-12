@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { disciplines, type Discipline } from "@/data/work";
 import { Nav } from "@/components/Nav";
@@ -65,6 +66,19 @@ function WorkPage() {
   const d = disciplines[discipline as Discipline];
   const others = (Object.entries(disciplines) as [Discipline, typeof d][]).filter(([k]) => k !== discipline);
 
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const id = decodeURIComponent(hash.substring(1));
+      const element = document.getElementById(id);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 150);
+      }
+    }
+  }, [discipline]);
+
   return (
     <main className="relative" style={{ background: "var(--ink)" }}>
       <CustomCursor />
@@ -93,7 +107,8 @@ function WorkPage() {
           {d.projects.map((p, i) => (
             <article
               key={`${p.title}-${i}`}
-              className="border-t pt-10 md:pt-14"
+              id={p.title.replace(/\s+/g, "-").toLowerCase()}
+              className="border-t pt-10 md:pt-14 scroll-mt-28"
               style={{ borderColor: "var(--border)" }}
             >
               <div className="grid grid-cols-12 items-baseline gap-4">
