@@ -15,8 +15,8 @@ import { Footer } from "@/components/Footer";
 
 export const Route = createFileRoute("/")({
   head: () => ({
+    title: "Paper & Pencil — Interior Architecture Studio, Bengaluru",
     meta: [
-      { title: "Paper & Pencil — Interior Architecture Studio, Bengaluru" },
       { name: "description", content: "Bengaluru interior architecture studio crafting considered residential, commercial, industrial and institutional spaces across India." },
       { property: "og:title", content: "Paper & Pencil — Interior Architecture Studio, Bengaluru" },
       { property: "og:description", content: "Considered interiors and architecture for residence, commerce, industry and institutions — drawn by hand from a quiet studio in Bengaluru." },

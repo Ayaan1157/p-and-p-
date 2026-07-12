@@ -16,8 +16,8 @@ export const Route = createFileRoute("/work/$discipline")({
     const desc = d?.tagline ?? "Selected work by Paper & Pencil.";
     const url = `https://velvet-folio-lab.lovable.app/work/${params.discipline}`;
     return {
+      title,
       meta: [
-        { title },
         { name: "description", content: desc },
         { property: "og:title", content: title },
         { property: "og:description", content: desc },
