@@ -1,0 +1,13 @@
+# Paper & Pencil
+
+> London interior architecture studio designing considered spaces for hospitality, residence and retail.
+
+Paper & Pencil is a small studio taking on a handful of commissions each year. Drawings are made by hand from a quiet room in London.
+
+## Pages
+
+- [Home](/): Studio introduction, selected work, services, and contact.
+- [Institutional Work](/work/institutional): Projects for cultural and civic institutions.
+- [Industrial Work](/work/industrial): Adaptive reuse and workshop interiors.
+- [Commercial Work](/work/commercial): Hospitality and retail interiors.
+- [Residential Work](/work/residential): Private homes and apartments.

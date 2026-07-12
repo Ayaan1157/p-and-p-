@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Paper & Pencil - Premium Art, Architecture & Interior Design Studio. Bangalore, Goa. Experience spatial elegance.">
+  <title>PAPER AND PENCIL | Art, Architecture & Interiors</title>
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Custom Cursor Elements -->
+  <div class="cursor-dot" id="js-cursor-dot"></div>
+  <div class="cursor-ring" id="js-cursor-ring"></div>
+
+  <!-- FIXED NAVIGATION BAR -->
+  <nav class="navbar" id="js-navbar">
+    <div class="nav-logo">
+      <a href="#" class="logo-main js-hover-target">Paper & Pencil</a>
+      <span class="logo-sub">Art | Architecture | Interiors</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#studio" class="nav-link js-hover-target">Studio</a></li>
+      <li><a href="#services" class="nav-link js-hover-target">Services</a></li>
+      <li><a href="#projects" class="nav-link js-hover-target">Projects</a></li>
+      <li><a href="#process" class="nav-link js-hover-target">Process</a></li>
+      <li><a href="#contact" class="nav-link js-hover-target">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <header class="hero" id="hero">
+    <!-- Hero Parallax Image Background -->
+    <div class="hero-bg">
+      <div class="hero-bg-inner" id="js-hero-bg">
+        <img src="assets/hero.png" alt="Paper & Pencil Architecture detail" class="hero-img">
+      </div>
+    </div>
+    
+    <div class="container">
+      <div class="hero-content">
+        <span class="hero-subtitle text-uppercase text-gold">Art • Architecture • Interiors</span>
+        <h1 class="hero-title">
+          <span class="title-line"><span>Creating Space</span></span>
+          <span class="title-line"><span>For Visionary</span></span>
+          <span class="title-line"><span>Ideas</span></span>
+        </h1>
+        <p class="hero-desc">
+          Paper & Pencil is a premium architectural design intervention. We shape high-end commercial spaces, structural industrial works, and opulent residential interiors that combine geometric purity with sensory richness.
+        </p>
+        <a href="#projects" class="hero-cta js-hover-target-gold">
+          <span class="cta-text">Explore Works</span>
+          <span class="cta-circle">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </span>
+        </a>
+      </div>
+    </div>
+    
+    <!-- Animated Scroll Indicator Line -->
+    <div class="scroll-indicator">
+      <span class="scroll-text">Scroll Down</span>
+      <div class="scroll-line-container">
+        <div class="scroll-line"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- INFINITE MARQUEE TICKER -->
+  <section class="ticker-container">
+    <div class="ticker-wrap">
+      <div class="ticker">
+        <div class="ticker-item">Art <span class="ticker-dot"></span></div>
+        <div class="ticker-item">Architecture <span class="ticker-dot"></span></div>
+        <div class="ticker-item">Interiors <span class="ticker-dot"></span></div>
+        <div class="ticker-item">Institutional <span class="ticker-dot"></span></div>
+        <div class="ticker-item">Industrial <span class="ticker-dot"></span></div>
+        <div class="ticker-item">Commercial <span class="ticker-dot"></span></div>
+        <div class="ticker-item">Residential <span class="ticker-dot"></span></div>
+        <!-- Duplicated items for infinite scroll loop -->
+        <div class="ticker-item">Art <span class="ticker-dot"></span></div>
+        <div class="ticker-item">Architecture <span class="ticker-dot"></span></div>
+        <div class="ticker-item">Interiors <span class="ticker-dot"></span></div>
+        <div class="ticker-item">Institutional <span class="ticker-dot"></span></div>
+        <div class="ticker-item">Industrial <span class="ticker-dot"></span></div>
+        <div class="ticker-item">Commercial <span class="ticker-dot"></span></div>
+        <div class="ticker-item">Residential <span class="ticker-dot"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STUDIO / ABOUT -->
+  <section class="studio reveal" id="studio">
+    <div class="ghost-num">01</div>
+    <div class="container">
+      <div class="studio-grid">
+        <div class="studio-left">
+          <span class="section-tag text-uppercase">/ The Studio</span>
+          <h2 class="studio-heading">Sensory elegance meets raw physical precision.</h2>
+          <p class="studio-desc">
+            We believe architecture is not just building a physical shell, but choreographing spatial energy. Operating at the intersections of structural boldness and intricate detailing, Paper & Pencil creates highly custom environments.
+          </p>
+          <p class="studio-desc-small text-gold">
+            Our projects range from high-capacity industrial plants like John Distilleries in Goa to luxury high-rise apartments such as Peninsula Heights in Bangalore. Each site represents a bespoke balance of functional efficiency, raw material honesty, and quiet luxury.
+          </p>
+        </div>
+        <div class="studio-right">
+          <div class="studio-img-frame">
+            <div class="studio-img-inner" id="js-studio-img">
+              <img src="assets/about.png" alt="Paper & Pencil Design Studio" class="studio-img">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4-SERVICE INTERACTIVE GRID -->
+  <section class="services reveal" id="services">
+    <div class="container">
+      <span class="section-tag text-uppercase">/ Our Services</span>
+      <h2 class="studio-heading" style="max-width: 600px;">Architectural disciplines, unified by refined geometry.</h2>
+      
+      <div class="services-grid">
+        <!-- Service 01: Institutional -->
+        <div class="service-card js-hover-target-gold" data-color="institutional">
+          <div class="service-flood"></div>
+          <div class="service-content">
+            <span class="service-num">01</span>
+            <h3 class="service-title">Institutional</h3>
+            <p class="service-desc">Scale-focused institutional masterplans designed to inspire collaborative learning, high-performance athletic engagement, and cultural community. (e.g. TVS New School, KSCA Alur)</p>
+          </div>
+          <div class="service-arrow">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Service 02: Industrial -->
+        <div class="service-card js-hover-target-gold" data-color="industrial">
+          <div class="service-flood"></div>
+          <div class="service-content">
+            <span class="service-num">02</span>
+            <h3 class="service-title">Industrial</h3>
+            <p class="service-desc">High-precision manufacturing units, heavy gantry floors, and complex process engineering structures. Built with exceptional mechanical efficiency. (e.g. John Distilleries, Glastronix)</p>
+          </div>
+          <div class="service-arrow">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Service 03: Commercial -->
+        <div class="service-card js-hover-target-gold" data-color="commercial">
+          <div class="service-flood"></div>
+          <div class="service-content">
+            <span class="service-num">03</span>
+            <h3 class="service-title">Commercial</h3>
+            <p class="service-desc">Brand-aligned retail stores, high-capacity commercial complexes, and bespoke travel cafes. Orchestrating memorable customer journeys and social atmospheres. (e.g. Fab India, Jolt Cafe)</p>
+          </div>
+          <div class="service-arrow">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Service 04: Residential -->
+        <div class="service-card js-hover-target-gold" data-color="residential">
+          <div class="service-flood"></div>
+          <div class="service-content">
+            <span class="service-num">04</span>
+            <h3 class="service-title">Residential</h3>
+            <p class="service-desc">Timeless luxury apartment interiors, custom architectural millwork, detailed architectural lighting, and opulent material selections that redefine modern living. (e.g. Peninsula Heights)</p>
+          </div>
+          <div class="service-arrow">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS SECTION -->
+  <section class="projects reveal" id="projects">
+    <div class="container">
+      <div class="projects-header">
+        <div>
+          <span class="section-tag text-uppercase">/ Featured Works</span>
+          <h2 class="projects-heading">Curation of structural & interior design details.</h2>
+        </div>
+        <p style="max-width: 320px; font-size: 0.95rem;">
+          From heavy-industry facilities to delicate, bespoke apartment carpentry. Exploring honest materiality.
+        </p>
+      </div>
+
+      <div class="projects-grid">
+        <!-- Project 1: Peninsula Heights -->
+        <a href="#" class="project-card js-hover-target-gold">
+          <div class="project-img-container">
+            <div class="project-tag-overlay">View Project Details</div>
+            <img src="assets/residential.png" alt="Peninsula Heights Luxury Living" class="project-img">
+          </div>
+          <div class="project-info">
+            <div class="project-meta">
+              <span class="project-category">Residential Interiors</span>
+              <span class="project-area">3,000 SFT • Bangalore</span>
+            </div>
+            <h3 class="project-title">Peninsula Heights</h3>
+            <p style="font-size: 0.85rem; max-width: 500px;">
+              Designed for refined tastes, this luxury apartment embodies modern sophistication and classic elegance with premium walnut panels and understated opulence.
+            </p>
+          </div>
+        </a>
+
+        <!-- Project 2: John Distilleries -->
+        <a href="#" class="project-card js-hover-target-gold">
+          <div class="project-img-container">
+            <div class="project-tag-overlay">View Project Details</div>
+            <img src="assets/distillery.png" alt="John Distilleries Goa" class="project-img">
+          </div>
+          <div class="project-info">
+            <div class="project-meta">
+              <span class="project-category">Industrial Architecture</span>
+              <span class="project-area">4,000 SQM • Goa</span>
+            </div>
+            <h3 class="project-title">John Distilleries</h3>
+            <p style="font-size: 0.85rem; max-width: 500px;">
+              A stunning distillation and malt facility showcasing structured cedar wood siding and black steel frames framing copper distillation pots behind double-height glass.
+            </p>
+          </div>
+        </a>
+
+        <!-- Project 3: Jolt Travel Cafe -->
+        <a href="#" class="project-card js-hover-target-gold">
+          <div class="project-img-container">
+            <div class="project-tag-overlay">View Project Details</div>
+            <img src="assets/cafe.png" alt="Jolt Travel Cafe Bangalore" class="project-img">
+          </div>
+          <div class="project-info">
+            <div class="project-meta">
+              <span class="project-category">Commercial Interiors</span>
+              <span class="project-area">900 SFT • Bangalore</span>
+            </div>
+            <h3 class="project-title">Jolt: The Travel Cafe</h3>
+            <p style="font-size: 0.85rem; max-width: 500px;">
+              Evoking architectural warmth, this commercial cafe features high structural wooden pillars, bespoke concrete flooring, and deep inset reading nooks.
+            </p>
+          </div>
+        </a>
+
+        <!-- Project 4: TVS New School -->
+        <a href="#" class="project-card js-hover-target-gold">
+          <div class="project-img-container">
+            <div class="project-tag-overlay">View Project Details</div>
+            <img src="assets/school.png" alt="TVS New School Courtyard" class="project-img">
+          </div>
+          <div class="project-info">
+            <div class="project-meta">
+              <span class="project-category">Institutional Architecture</span>
+              <span class="project-area">20,000 SQM • Madurai</span>
+            </div>
+            <h3 class="project-title">TVS New School</h3>
+            <p style="font-size: 0.85rem; max-width: 500px;">
+              In collaboration with LIVINGFORM, a multi-volume geometric campus courtyard focusing on raw concrete finishes and bold natural ventilation shading.
+            </p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS STEPS -->
+  <section class="process reveal" id="process">
+    <div class="container">
+      <span class="section-tag text-uppercase">/ Our Methodology</span>
+      <h2 class="studio-heading" style="max-width: 600px;">Form is schematic; detail is absolute.</h2>
+      
+      <div class="process-grid">
+        <!-- Step 1 -->
+        <div class="process-step">
+          <div class="ghost-num">01</div>
+          <h3 class="process-title">Vision &amp; Brief</h3>
+          <p class="process-desc">
+            We collaborate closely with clients to outline operational demands, sensory aspirations, and budget limits, mapping spatial trajectories before drawing lines.
+          </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="process-step">
+          <div class="ghost-num">02</div>
+          <h3 class="process-title">Schematic Design</h3>
+          <p class="process-desc">
+            Generating site plan alignments, architectural elevations, and photorealistic 3D light studies, solidifying the layout forms and overall visual geometry.
+          </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="process-step">
+          <div class="ghost-num">03</div>
+          <h3 class="process-title">Tactile Styling</h3>
+          <p class="process-desc">
+            Curation of actual wood panels, detailed stone slabs, custom carpentry joinery, electrical light layouts, and fabrics to design an atmosphere of quiet luxury.
+          </p>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="process-step">
+          <div class="ghost-num">04</div>
+          <h3 class="process-title">Construction Admin</h3>
+          <p class="process-desc">
+            High-precision on-site engineering coordination, structural review, and finish quality control, ensuring that the completed site matches our design.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLIENT QUOTE -->
+  <section class="quote-section reveal">
+    <div class="container">
+      <div class="quote-container">
+        <span class="quote-icon">&ldquo;</span>
+        <blockquote class="quote-text">
+          Designed for a family with highly refined tastes, this architectural project embodies a seamless blend of modern sophistication and classic elegance. Premium materials, sleek finishes, and timeless design elements create an atmosphere of understated opulence.
+        </blockquote>
+        <span class="quote-author">Alpa &amp; Deval Shah</span>
+        <span class="quote-author-title">Clients, Peninsula Heights Bangalore</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT FORM -->
+  <section class="contact reveal" id="contact">
+    <div class="container">
+      <div class="contact-grid">
+        <div class="contact-left">
+          <span class="section-tag text-uppercase">/ Connect</span>
+          <h2 class="contact-heading">Let's build something exceptional.</h2>
+          <p style="max-width: 420px; font-size: 1rem; line-height: 1.6;">
+            We partner with visionaries looking to establish remarkable commercial facades, precise industrial structures, or bespoke residential details.
+          </p>
+          
+          <ul class="contact-info-list">
+            <li class="contact-info-item">
+              <span class="info-label">Office</span>
+              <span class="info-val">Bangalore &amp; Goa, India</span>
+            </li>
+            <li class="contact-info-item">
+              <span class="info-label">Telephone</span>
+              <a href="tel:+919986421381" class="info-val js-hover-target-gold">+91 99864 21381</a>
+            </li>
+            <li class="contact-info-item">
+              <span class="info-label">Inquiries</span>
+              <a href="mailto:studio@paperandpencil.in" class="info-val js-hover-target-gold">studio@paperandpencil.in</a>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="contact-right">
+          <!-- Normal Form State -->
+          <form class="contact-form" id="js-contact-form">
+            <div class="form-group">
+              <input type="text" id="name" required class="form-input" placeholder=" " autocomplete="name">
+              <label for="name" class="form-label">Full Name</label>
+            </div>
+            
+            <div class="form-group">
+              <input type="email" id="email" required class="form-input" placeholder=" " autocomplete="email">
+              <label for="email" class="form-label">Email Address</label>
+            </div>
+
+            <div class="form-group">
+              <input type="text" id="subject" required class="form-input" placeholder=" ">
+              <label for="subject" class="form-label">Subject / Service Needed</label>
+            </div>
+
+            <div class="form-group">
+              <textarea id="message" required class="form-input" rows="4" placeholder=" " autocomplete="off" style="resize: none;"></textarea>
+              <label for="message" class="form-label">Your Project Vision</label>
+            </div>
+            
+            <button type="submit" class="form-btn js-hover-target-gold">Submit Enquiry</button>
+          </form>
+
+          <!-- Success Message State -->
+          <div class="form-success" id="js-form-success">
+            <h3 class="form-success-title">Enquiry Received</h3>
+            <p style="font-size: 0.95rem; font-weight: 200;">
+              Thank you for connecting. Our design team will review your project parameters and contact you within 48 business hours to organize a consultation.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">Paper &amp; Pencil</div>
+          <p class="footer-desc">
+            A premium collective of architects, visual designers, and interior stylists based in Bangalore and Goa. Shaping raw material honesty into high-end physical spatial form.
+          </p>
+        </div>
+        
+        <div>
+          <h4 class="footer-title">Directory</h4>
+          <ul class="footer-links">
+            <li><a href="#studio" class="js-hover-target">Studio Profile</a></li>
+            <li><a href="#services" class="js-hover-target">Service Spheres</a></li>
+            <li><a href="#projects" class="js-hover-target">Featured Works</a></li>
+            <li><a href="#process" class="js-hover-target">Our Methodology</a></li>
+            <li><a href="#contact" class="js-hover-target">Contact / Connect</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-title">Social</h4>
+          <ul class="footer-links">
+            <li><a href="#" class="js-hover-target">Instagram</a></li>
+            <li><a href="#" class="js-hover-target">LinkedIn</a></li>
+            <li><a href="#" class="js-hover-target">Pinterest</a></li>
+            <li><a href="#" class="js-hover-target">Archello</a></li>
+            <li><a href="#" class="js-hover-target">ArchDaily</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-copy">
+        <div class="footer-copy-left">
+          &copy; 2026 Paper &amp; Pencil Studio. All rights reserved.
+        </div>
+        <div class="footer-copy-right">
+          <a href="#" class="js-hover-target">Privacy Policy</a>
+          <a href="#" class="js-hover-target">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript Interaction Script -->
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+@import "tailwindcss" source(none);
+@import "tw-animate-css";
+@source "../src";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-serif: "Cormorant Garamond", ui-serif, Georgia, serif;
+  --font-sans: "Jost", ui-sans-serif, system-ui, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-cream: var(--cream);
+  --color-dust: var(--dust);
+  --color-gold: var(--gold);
+  --color-navy: var(--navy);
+  --color-navy-deep: var(--navy-deep);
+  --color-grey: var(--grey);
+  --color-grey-soft: var(--grey-soft);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --ease-luxury: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-silk: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+:root {
+  --radius: 0.25rem;
+
+  /* Brand palette — navy & grey luxury */
+  --navy-deep: oklch(0.18 0.04 255);
+  --navy: oklch(0.26 0.05 255);
+  --ink: oklch(0.13 0.025 255);
+  --ink-soft: oklch(0.22 0.035 255);
+  --grey: oklch(0.62 0.01 255);
+  --grey-soft: oklch(0.78 0.008 255);
+  --cream: oklch(0.96 0.012 85);
+  --dust: oklch(0.86 0.018 80);
+  --gold: oklch(0.78 0.12 78);
+
+  --background: var(--ink);
+  --foreground: var(--cream);
+  --card: var(--ink-soft);
+  --card-foreground: var(--cream);
+  --popover: var(--ink-soft);
+  --popover-foreground: var(--cream);
+  --primary: var(--gold);
+  --primary-foreground: var(--ink);
+  --secondary: var(--navy);
+  --secondary-foreground: var(--cream);
+  --muted: oklch(0.22 0.03 255);
+  --muted-foreground: var(--grey-soft);
+  --accent: var(--navy);
+  --accent-foreground: var(--cream);
+  --destructive: oklch(0.6 0.22 25);
+  --destructive-foreground: var(--cream);
+  --border: oklch(0.3 0.025 255);
+  --input: oklch(0.3 0.025 255);
+  --ring: var(--gold);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+  }
+  html, body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+  }
+  img, video { content-visibility: auto; }
+  section { content-visibility: auto; contain-intrinsic-size: 1px 900px; }
+  #top { content-visibility: visible; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+  ::selection { background: var(--gold); color: var(--ink); }
+  h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 400; letter-spacing: -0.01em; }
+}
+
+@layer utilities {
+  .font-serif { font-family: var(--font-serif); }
+  .font-sans { font-family: var(--font-sans); }
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 400;
+  }
+  .ghost-numeral {
+    font-family: var(--font-serif);
+    color: transparent;
+    -webkit-text-stroke: 1px color-mix(in oklab, var(--cream) 18%, transparent);
+    font-weight: 300;
+    line-height: 0.85;
+    pointer-events: none;
+    user-select: none;
+  }
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 1s var(--ease-luxury), transform 1.2s var(--ease-luxury); }
+  .reveal.is-visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  .link-underline { position: relative; display: inline-block; }
+  .link-underline::after {
+    content: ""; position: absolute; left: 0; bottom: -2px; width: 100%; height: 1px;
+    background: currentColor; transform: scaleX(0); transform-origin: right;
+    transition: transform 0.6s var(--ease-luxury);
+  }
+  .link-underline:hover::after { transform: scaleX(1); transform-origin: left; }
+
+  .field-line {
+    background: transparent; border: 0; border-bottom: 1px solid var(--border);
+    width: 100%; padding: 1rem 0; color: var(--cream); font-family: var(--font-sans); font-weight: 300;
+    transition: border-color 0.5s var(--ease-luxury), box-shadow 0.5s var(--ease-luxury);
+    outline: none;
+  }
+  .field-line::placeholder { color: var(--grey); }
+  .field-line:focus { border-bottom-color: var(--gold); box-shadow: 0 1px 0 0 var(--gold); }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .animate-marquee { animation: marquee 40s linear infinite; }
+
+  @keyframes scrollLine {
+    0% { transform: scaleY(0); transform-origin: top; }
+    50% { transform: scaleY(1); transform-origin: top; }
+    50.01% { transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+  .animate-scroll-line { animation: scrollLine 2.4s var(--ease-silk) infinite; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero-fade { opacity: 0; animation: fadeUp 1.2s var(--ease-luxury) forwards; }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  .animate-blink { animation: blink 1.1s step-end infinite; }
+
+  /* Collage tiles — hover only on real pointer devices to avoid sticky states */
+  .collage-tile { transform: translateZ(0); transition: transform 0.35s var(--ease-luxury), opacity 0.35s var(--ease-luxury); }
+  @media (hover: hover) and (pointer: fine) {
+    .collage:hover .collage-tile:not(:hover) { opacity: 0.5; }
+    .collage-tile:hover { transform: scale(1.35); z-index: 40; }
+  }
+  .collage-tile:focus { outline: none; }
+  .collage-tile:focus:not(:focus-visible) { transform: none; }
+}
+
