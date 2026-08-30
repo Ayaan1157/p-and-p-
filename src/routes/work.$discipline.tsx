@@ -153,7 +153,7 @@ function WorkPage() {
                     {String(pIdx + 1).padStart(2, "0")}
                   </span>
                   <div className="space-y-3">
-                    <h2 className="font-sans text-xl md:text-3xl font-light tracking-wide">{p.title}</h2>
+                    <h2 className="font-sans text-lg md:text-2xl font-light uppercase tracking-[0.18em]">{p.title}</h2>
                     {p.note && (
                       <p className="text-sm font-light leading-relaxed" style={{ color: "var(--grey-soft)" }}>
                         {p.note}
