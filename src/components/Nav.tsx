@@ -49,14 +49,14 @@ export function Nav() {
           </a>
           
           <nav className="hidden gap-10 text-xs uppercase tracking-[0.28em] text-grey-soft md:flex">
-            <a className="link-underline" href="#studio">Studio</a>
-            <a className="link-underline" href="#services">Services</a>
-            <a className="link-underline" href="#projects">Projects</a>
-            <a className="link-underline" href="#process">Process</a>
-            <a className="link-underline" href="#footer">Contact</a>
+            <a className="link-underline" href="/#studio">Studio</a>
+            <a className="link-underline" href="/#services">Services</a>
+            <a className="link-underline" href="/#projects">Projects</a>
+            <a className="link-underline" href="/#process">Process</a>
+            <a className="link-underline" href="/#footer">Contact</a>
           </nav>
           
-          <a href="#contact" className="hidden text-xs uppercase tracking-[0.28em] md:inline-flex" style={{ color: "var(--gold)" }}>
+          <a href="/#contact" className="hidden text-xs uppercase tracking-[0.28em] md:inline-flex" style={{ color: "var(--gold)" }}>
             <span className="link-underline">Enquire →</span>
           </a>
 
@@ -99,15 +99,15 @@ export function Nav() {
         }`}
       >
         <div className="flex flex-col gap-8 mt-24 text-sm uppercase tracking-[0.28em] text-grey-soft">
-          <a className="link-underline w-fit" href="#studio" onClick={() => setIsOpen(false)}>Studio</a>
-          <a className="link-underline w-fit" href="#services" onClick={() => setIsOpen(false)}>Services</a>
-          <a className="link-underline w-fit" href="#projects" onClick={() => setIsOpen(false)}>Projects</a>
-          <a className="link-underline w-fit" href="#process" onClick={() => setIsOpen(false)}>Process</a>
-          <a className="link-underline w-fit" href="#footer" onClick={() => setIsOpen(false)}>Contact</a>
+          <a className="link-underline w-fit" href="/#studio" onClick={() => setIsOpen(false)}>Studio</a>
+          <a className="link-underline w-fit" href="/#services" onClick={() => setIsOpen(false)}>Services</a>
+          <a className="link-underline w-fit" href="/#projects" onClick={() => setIsOpen(false)}>Projects</a>
+          <a className="link-underline w-fit" href="/#process" onClick={() => setIsOpen(false)}>Process</a>
+          <a className="link-underline w-fit" href="/#footer" onClick={() => setIsOpen(false)}>Contact</a>
         </div>
 
         <div className="text-sm uppercase tracking-[0.28em] mb-6">
-          <a href="#contact" onClick={() => setIsOpen(false)} style={{ color: "var(--gold)" }}>
+          <a href="/#contact" onClick={() => setIsOpen(false)} style={{ color: "var(--gold)" }}>
             <span className="link-underline">Enquire →</span>
           </a>
         </div>
