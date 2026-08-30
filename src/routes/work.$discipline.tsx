@@ -130,7 +130,7 @@ function WorkPage() {
             ← Back
           </Link>
           <p className="mt-10 text-[11px] uppercase tracking-[0.32em] opacity-90">Discipline</p>
-          <h1 className="mt-6 font-serif text-[clamp(3rem,9vw,8rem)] leading-[0.95]">{d.label}</h1>
+          <h1 className="mt-6 font-sans font-light text-[clamp(3rem,8vw,7rem)] leading-[0.95]">{d.label}</h1>
           <p className="mt-8 max-w-xl text-base font-light leading-relaxed opacity-90">{d.tagline}</p>
           <p className="mt-10 text-[11px] uppercase tracking-[0.32em] opacity-80">
             {d.projects.length} {d.projects.length === 1 ? "Project" : "Projects"}
