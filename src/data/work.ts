@@ -119,7 +119,7 @@ export const disciplines: Record<
     label: "Residential",
     code: "Ra",
     color: "#EBAF04",
-    tagline: "Private homes shaped around the rhythms of the people who live in them.",
+    tagline: "Habitats shaped around the rhythms of the people who live in them.",
     projects: [
       {
         title: "Brigade Omega Residence",
