@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { disciplines, type Discipline } from "@/data/work";
 import { Nav } from "@/components/Nav";
