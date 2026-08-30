@@ -20,7 +20,7 @@ export function Footer() {
         <div>
           <p className="text-[10px] uppercase tracking-[0.32em]" style={{ color: "var(--gold)" }}>Elsewhere</p>
           <ul className="mt-6 space-y-3 text-sm font-light" style={{ color: "var(--grey-soft)" }}>
-            <li><a href="https://www.instagram.com/studio.paperandpencil?igsi=MWF3d2V2YjY4bTVkZg==" target="_blank" rel="noopener noreferrer" className="link-underline">Instagram</a></li>
+            <li><a href="https://www.instagram.com/studio.paperandpencil?igsi=MWF3d2V2YjY4bTVkZg%3D%3D" target="_blank" rel="noopener noreferrer" className="link-underline">Instagram</a></li>
             <li><a href="#" className="link-underline">Journal</a></li>
             <li><a href="#" className="link-underline">Press</a></li>
           </ul>
