@@ -43,7 +43,7 @@ export function Contact() {
             </div>
             <div className="md:col-span-2">
               <label htmlFor="contact-message" className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "var(--grey)" }}>A few words</label>
-              <textarea id="contact-message" name="message" rows={4} className="field-line resize-none" placeholder="Tell us a little about the place." />
+              <textarea id="contact-message" name="message" rows={4} className="field-line resize-none" placeholder="What do you want to know" />
             </div>
           </div>
           <button
