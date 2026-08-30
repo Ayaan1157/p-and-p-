@@ -1,5 +1,5 @@
 const steps = [
-  { n: "01", title: "Discover", text: "We begin with a long, unhurried conversation to understand the brief aspiration." },
+  { n: "01", title: "Discover", text: "We begin with a long, unhurried conversation to understand the aspiration beneath the design brief." },
   { n: "02", title: "Conceptualize", text: "Concepts emerge on paper before pixels — proportion, light and function drawn by hand." },
   { n: "03", title: "Refine", text: "Drawings are refined to specification: Every corner, finish and joinary - detailed." },
   { n: "04", title: "Realize", text: "We remain on site through completion, attending to the final tenth of one percent." },
