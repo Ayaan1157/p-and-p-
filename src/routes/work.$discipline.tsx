@@ -149,11 +149,11 @@ function WorkPage() {
             >
               <div className="flex flex-col gap-6 md:grid md:grid-cols-12 md:items-baseline md:gap-4">
                 <div className="flex items-start gap-4 col-span-8">
-                  <span className="font-serif text-sm md:text-base shrink-0" style={{ color: d.color }}>
+                  <span className="font-sans text-sm md:text-base font-light shrink-0" style={{ color: d.color }}>
                     {String(pIdx + 1).padStart(2, "0")}
                   </span>
                   <div className="space-y-3">
-                    <h2 className="font-serif text-2xl md:text-4xl">{p.title}</h2>
+                    <h2 className="font-sans text-xl md:text-3xl font-light tracking-wide">{p.title}</h2>
                     {p.note && (
                       <p className="text-sm font-light leading-relaxed" style={{ color: "var(--grey-soft)" }}>
                         {p.note}
@@ -171,7 +171,7 @@ function WorkPage() {
                     <span className="text-[9px] opacity-50 md:hidden">Size</span>
                     <span>{p.size}</span>
                   </div>
-                  <div className="flex flex-col gap-1 ml-auto md:ml-0 md:col-span-1 font-serif text-base text-right md:text-right" style={{ color: "var(--gold)" }}>
+                  <div className="flex flex-col gap-1 ml-auto md:ml-0 md:col-span-1 font-sans text-xs uppercase tracking-[0.28em] text-right md:text-right" style={{ color: "var(--gold)" }}>
                     <span className="text-[9px] font-sans uppercase tracking-[0.28em] text-grey-soft opacity-50 md:hidden text-right">Year</span>
                     <span>{p.year}</span>
                   </div>
