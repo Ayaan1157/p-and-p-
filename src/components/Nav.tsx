@@ -54,14 +54,6 @@ export function Nav() {
             <a className="link-underline" href="#projects">Projects</a>
             <a className="link-underline" href="#process">Process</a>
             <a className="link-underline" href="#contact">Contact</a>
-            <a
-              className="link-underline"
-              href="/PAPER AND PENCIL - Architecture & Interior Portfolio 2026.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Portfolio
-            </a>
           </nav>
           
           <a href="#contact" className="hidden text-xs uppercase tracking-[0.28em] md:inline-flex" style={{ color: "var(--gold)" }}>
@@ -112,15 +104,6 @@ export function Nav() {
           <a className="link-underline w-fit" href="#projects" onClick={() => setIsOpen(false)}>Projects</a>
           <a className="link-underline w-fit" href="#process" onClick={() => setIsOpen(false)}>Process</a>
           <a className="link-underline w-fit" href="#contact" onClick={() => setIsOpen(false)}>Contact</a>
-          <a
-            className="link-underline w-fit"
-            href="/PAPER AND PENCIL - Architecture & Interior Portfolio 2026.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => setIsOpen(false)}
-          >
-            Portfolio
-          </a>
         </div>
 
         <div className="text-sm uppercase tracking-[0.28em] mb-6">

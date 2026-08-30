@@ -54,18 +54,6 @@ export function About() {
             <p>
               Whether creating spaces from the ground up or reimagining existing ones, let us shape your world.
             </p>
-            <div className="mt-8">
-              <a
-                href="/PAPER AND PENCIL - Architecture & Interior Portfolio 2026.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 border px-6 py-3 text-xs uppercase tracking-[0.3em] transition-all duration-300 hover:bg-[color-mix(in_oklab,var(--gold)_10%,transparent)]"
-                style={{ borderColor: "var(--gold)", color: "var(--gold)" }}
-              >
-                View Portfolio
-                <span>→</span>
-              </a>
-            </div>
           </div>
         </div>
 
