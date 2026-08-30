@@ -88,7 +88,8 @@ export function Projects() {
               Selected <span style={{ color: "var(--gold)" }}>Works.</span>
             </h2>
             <p className="mt-6 max-w-xl text-sm font-light leading-relaxed" style={{ color: "var(--grey-soft)" }}>
-              Explore the quiet poetry of hand-drawn lines, material spaces, and built environments. Click any frame to view details.
+              Explore the quiet poetry of hand-drawn lines, material spaces, and built environments.<br />
+              Click any frame to view details.
             </p>
           </div>
         </div>
