@@ -95,7 +95,7 @@ export const disciplines: Record<
     label: "Commercial",
     code: "Ca",
     color: "#0329B4",
-    tagline: "Workplaces and retail environments designed for considered commerce.",
+    tagline: "Hospitality and retail environments scaled for specific commerce.",
     projects: [
       {
         title: "KSCA",
