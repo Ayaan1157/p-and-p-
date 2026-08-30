@@ -53,7 +53,6 @@ export function Nav() {
             <a className="link-underline" href="/#services">Services</a>
             <a className="link-underline" href="/#projects">Projects</a>
             <a className="link-underline" href="/#process">Process</a>
-            <a className="link-underline" href="/#footer">Contact</a>
           </nav>
           
           <a href="/#contact" className="hidden text-xs uppercase tracking-[0.28em] md:inline-flex" style={{ color: "var(--gold)" }}>
@@ -103,7 +102,6 @@ export function Nav() {
           <a className="link-underline w-fit" href="/#services" onClick={() => setIsOpen(false)}>Services</a>
           <a className="link-underline w-fit" href="/#projects" onClick={() => setIsOpen(false)}>Projects</a>
           <a className="link-underline w-fit" href="/#process" onClick={() => setIsOpen(false)}>Process</a>
-          <a className="link-underline w-fit" href="/#footer" onClick={() => setIsOpen(false)}>Contact</a>
         </div>
 
         <div className="text-sm uppercase tracking-[0.28em] mb-6">
