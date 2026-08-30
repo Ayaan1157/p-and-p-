@@ -30,19 +30,19 @@ export function Contact() {
         >
           <div className="grid grid-cols-1 gap-x-10 gap-y-2 md:grid-cols-2">
             <div>
-              <label htmlFor="contact-name" className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "var(--grey)" }}>Name</label>
+              <label htmlFor="contact-name" className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "var(--gold)" }}>Name</label>
               <input id="contact-name" name="name" className="field-line" placeholder="Your name" required />
             </div>
             <div>
-              <label htmlFor="contact-email" className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "var(--grey)" }}>Email</label>
+              <label htmlFor="contact-email" className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "var(--gold)" }}>Email</label>
               <input id="contact-email" name="email" type="email" className="field-line" placeholder="you@studio.com" required />
             </div>
             <div className="md:col-span-2">
-              <label htmlFor="contact-project" className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "var(--grey)" }}>Project type</label>
+              <label htmlFor="contact-project" className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "var(--gold)" }}>Project type</label>
               <input id="contact-project" name="project" className="field-line" placeholder="Hospitality, residence, retail…" />
             </div>
             <div className="md:col-span-2">
-              <label htmlFor="contact-message" className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "var(--grey)" }}>A few words</label>
+              <label htmlFor="contact-message" className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "var(--gold)" }}>A few words</label>
               <textarea id="contact-message" name="message" rows={4} className="field-line resize-none" placeholder="What do you want to know" />
             </div>
           </div>
