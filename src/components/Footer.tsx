@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <footer className="border-t pt-24 pb-12" style={{ borderColor: "var(--border)", background: "var(--navy-deep)" }}>
+    <footer id="footer" className="border-t pt-24 pb-12" style={{ borderColor: "var(--border)", background: "var(--navy-deep)" }}>
       <div className="mx-auto grid max-w-[1600px] grid-cols-1 gap-16 px-6 md:grid-cols-3 md:px-12">
         <div>
           <p className="font-serif text-3xl uppercase tracking-wider">PAPER AND PENCIL</p>
