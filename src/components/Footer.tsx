@@ -12,9 +12,9 @@ export function Footer() {
           <p className="text-[10px] uppercase tracking-[0.32em]" style={{ color: "var(--gold)" }}>Studio</p>
           <ul className="mt-6 space-y-3 text-sm font-light" style={{ color: "var(--grey-soft)" }}>
             <li>#374, 1st A Cross,</li>
-            <li>Winn Field Gardens,</li>
-            <li>Bengaluru, 560077</li>
-            <li>By appointment</li>
+            <li>WINNFIELD Gardens,</li>
+            <li>Bengaluru - 560077</li>
+            <li className="pt-3 text-xs opacity-60">By Appointment</li>
           </ul>
         </div>
         <div>
