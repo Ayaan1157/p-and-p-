@@ -32,7 +32,7 @@ export const disciplines: Record<
     label: "Industrial",
     code: "Ia",
     color: "#7030A0",
-    tagline: "Production and logistics environments shaped for performance and precision.",
+    tagline: "Production and logistics environments envisioned for performance and precision.",
     projects: [
       {
         title: "John Distilleries — Big Banyan",
@@ -119,7 +119,7 @@ export const disciplines: Record<
     label: "Residential",
     code: "Ra",
     color: "#DDA81A",
-    tagline: "Habitats shaped around the rhythms of the people who live in them.",
+    tagline: "Habitats tailored around the rhythms of the people who live in them.",
     projects: [
       {
         title: "Brigade Omega Residence",
