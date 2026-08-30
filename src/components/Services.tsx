@@ -43,16 +43,16 @@ export function Services() {
               />
               <div className="relative flex min-h-[280px] flex-col justify-between">
                 <div className="flex items-start justify-between">
-                  <span className="font-serif text-sm transition-colors duration-500 group-hover:text-black" style={{ color: "var(--gold)" }}>{s.n}</span>
-                  <span className="text-xs uppercase tracking-[0.28em] opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-hover:text-black">
+                  <span className="font-serif text-sm transition-colors duration-500 group-hover:text-cream" style={{ color: "var(--gold)" }}>{s.n}</span>
+                  <span className="text-xs uppercase tracking-[0.28em] opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-hover:text-cream" style={{ color: "var(--cream)" }}>
                     View work →
                   </span>
                 </div>
                 <div>
-                  <h3 className="font-serif text-4xl transition-all duration-700 ease-[var(--ease-luxury)] group-hover:-translate-y-1 group-hover:text-black md:text-5xl">
+                  <h3 className="font-serif text-4xl transition-all duration-700 ease-[var(--ease-luxury)] group-hover:-translate-y-1 group-hover:text-cream md:text-5xl text-cream">
                     {s.title}
                   </h3>
-                  <p className="mt-5 max-w-md text-sm font-normal leading-relaxed transition-colors duration-500 text-grey-soft group-hover:text-black/90">
+                  <p className="mt-5 max-w-md text-sm font-light leading-relaxed transition-colors duration-500 text-grey-soft group-hover:text-cream/90">
                     {s.desc}
                   </p>
                 </div>
