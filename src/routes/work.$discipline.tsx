@@ -66,6 +66,13 @@ function WorkPage() {
   const d = disciplines[discipline as Discipline];
   const others = (Object.entries(disciplines) as [Discipline, typeof d][]).filter(([k]) => k !== discipline);
 
+  const [lightbox, setLightbox] = useState<{
+    src: string;
+    title: string;
+    projectIndex: number;
+    imageIndex: number;
+  } | null>(null);
+
   useEffect(() => {
     const hash = window.location.hash;
     if (hash) {
@@ -78,6 +85,32 @@ function WorkPage() {
       }
     }
   }, [discipline]);
+
+  // Handle keyboard navigation for Lightbox
+  useEffect(() => {
+    if (!lightbox) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightbox(null);
+      if (e.key === "ArrowRight") navigateLightbox(1);
+      if (e.key === "ArrowLeft") navigateLightbox(-1);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [lightbox]);
+
+  const navigateLightbox = (direction: number) => {
+    if (!lightbox) return;
+    const project = d.projects[lightbox.projectIndex];
+    if (!project) return;
+    const newIdx = lightbox.imageIndex + direction;
+    if (newIdx >= 0 && newIdx < project.images.length) {
+      setLightbox({
+        ...lightbox,
+        src: project.images[newIdx],
+        imageIndex: newIdx,
+      });
+    }
+  };
 
   return (
     <main className="relative" style={{ background: "var(--ink)" }}>
@@ -104,9 +137,9 @@ function WorkPage() {
 
       <section className="py-20 md:py-28">
         <div className="mx-auto max-w-[1600px] px-6 md:px-12 space-y-24 md:space-y-32">
-          {d.projects.map((p, i) => (
+          {d.projects.map((p, pIdx) => (
             <article
-              key={`${p.title}-${i}`}
+              key={`${p.title}-${pIdx}`}
               id={p.title.replace(/\s+/g, "-").toLowerCase()}
               className="border-t pt-10 md:pt-14 scroll-mt-28"
               style={{ borderColor: "var(--border)" }}
@@ -114,7 +147,7 @@ function WorkPage() {
               <div className="flex flex-col gap-6 md:grid md:grid-cols-12 md:items-baseline md:gap-4">
                 <div className="flex items-start gap-4 col-span-8">
                   <span className="font-serif text-sm md:text-base shrink-0" style={{ color: d.color }}>
-                    {String(i + 1).padStart(2, "0")}
+                    {String(pIdx + 1).padStart(2, "0")}
                   </span>
                   <div className="space-y-3">
                     <h2 className="font-serif text-2xl md:text-4xl">{p.title}</h2>
@@ -144,28 +177,39 @@ function WorkPage() {
 
               {p.images.length > 0 && (
                 <div
-                  className={`mt-10 grid gap-4 md:gap-6 ${
+                  className={`mt-10 grid gap-6 md:gap-8 ${
                     p.images.length === 1
                       ? "grid-cols-1"
-                      : p.images.length === 2
-                      ? "grid-cols-1 md:grid-cols-2"
-                      : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                      : "grid-cols-1 md:grid-cols-2"
                   }`}
                 >
-                  {p.images.map((src, idx) => (
+                  {p.images.map((src, imgIdx) => (
                     <div
-                      key={idx}
-                      className="group relative overflow-hidden"
+                      key={imgIdx}
+                      onClick={() =>
+                        setLightbox({
+                          src,
+                          title: p.title,
+                          projectIndex: pIdx,
+                          imageIndex: imgIdx,
+                        })
+                      }
+                      className="group relative cursor-pointer overflow-hidden border border-border/40 rounded-sm shadow-lg transition-all duration-500 hover:border-gold/60"
                       style={{ background: "var(--navy-deep)" }}
                     >
                       <img
                         src={src}
-                        alt={`${p.title} — view ${idx + 1}`}
+                        alt={`${p.title} — view ${imgIdx + 1}`}
                         loading="lazy"
                         decoding="async"
-                        className="block h-auto w-full transition-transform duration-700 ease-[var(--ease-luxury)] group-hover:scale-[1.02]"
-                        style={{ borderTop: `3px solid ${d.color}` }}
+                        className="block h-auto w-full transition-transform duration-700 ease-[var(--ease-luxury)] group-hover:scale-[1.03]"
+                        style={{ borderTop: `4px solid ${d.color}` }}
                       />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                        <span className="rounded bg-black/80 px-4 py-2 text-[10px] uppercase tracking-[0.3em] text-cream backdrop-blur-sm border border-gold/40">
+                          Click to Expand ↗
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -174,6 +218,67 @@ function WorkPage() {
           ))}
         </div>
       </section>
+
+      {/* Lightbox Modal */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-between bg-black/95 p-4 md:p-8 backdrop-blur-md animate-fade-in"
+          onClick={() => setLightbox(null)}
+        >
+          {/* Header */}
+          <div className="flex w-full max-w-[1600px] items-center justify-between text-cream z-10" onClick={(e) => e.stopPropagation()}>
+            <div className="space-y-1">
+              <p className="text-xs uppercase tracking-[0.3em] text-gold">{lightbox.title}</p>
+              <p className="text-[10px] uppercase tracking-[0.25em] text-grey-soft">
+                View {lightbox.imageIndex + 1} of {d.projects[lightbox.projectIndex].images.length}
+              </p>
+            </div>
+            <button
+              onClick={() => setLightbox(null)}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/40 text-cream transition-colors hover:bg-gold hover:text-black"
+              aria-label="Close full view"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Main Image Container */}
+          <div className="relative flex flex-1 items-center justify-center py-4 w-full" onClick={(e) => e.stopPropagation()}>
+            {/* Prev button */}
+            {lightbox.imageIndex > 0 && (
+              <button
+                onClick={() => navigateLightbox(-1)}
+                className="absolute left-2 md:left-6 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-black/60 border border-gold/40 text-gold transition-all hover:bg-gold hover:text-black hover:scale-110"
+                aria-label="Previous image"
+              >
+                ←
+              </button>
+            )}
+
+            <img
+              src={lightbox.src}
+              alt={lightbox.title}
+              className="max-h-[82vh] max-w-[92vw] object-contain rounded shadow-2xl transition-transform duration-300"
+            />
+
+            {/* Next button */}
+            {lightbox.imageIndex < d.projects[lightbox.projectIndex].images.length - 1 && (
+              <button
+                onClick={() => navigateLightbox(1)}
+                className="absolute right-2 md:right-6 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-black/60 border border-gold/40 text-gold transition-all hover:bg-gold hover:text-black hover:scale-110"
+                aria-label="Next image"
+              >
+                →
+              </button>
+            )}
+          </div>
+
+          {/* Footer controls */}
+          <div className="text-[10px] uppercase tracking-[0.3em] text-grey-soft" onClick={(e) => e.stopPropagation()}>
+            Use Arrow Keys ← → to navigate · Esc to close
+          </div>
+        </div>
+      )}
 
       <section className="border-t py-20" style={{ borderColor: "var(--border)" }}>
         <div className="mx-auto max-w-[1600px] px-6 md:px-12">

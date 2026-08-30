@@ -93,7 +93,7 @@ export function Projects() {
           </div>
         </div>
 
-        <div className="reveal collage mt-16 grid grid-cols-2 gap-3 grid-flow-dense auto-rows-[120px] md:grid-cols-8 md:auto-rows-[160px] md:gap-3">
+        <div className="reveal collage mt-16 grid grid-cols-2 gap-4 grid-flow-dense auto-rows-[180px] md:grid-cols-8 md:auto-rows-[240px] md:gap-4">
           {tiles.map((t, i) => {
             const span = layoutSpans[i % layoutSpans.length];
             return (
