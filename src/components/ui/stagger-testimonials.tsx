@@ -30,7 +30,7 @@ const initial: Testimonial[] = [
   {
     tempId: 3,
     testimonial:
-      "One of the best architects you can find in Bangalore. Very nice and interesting designs.",
+      "One of the best architects you can find in Bengaluru. Very nice and interesting designs.",
     by: "Shruthi Iyer · Google Review",
   },
   {
@@ -131,7 +131,7 @@ export const StaggerTestimonials: React.FC<{ items?: Testimonial[] }> = ({
       const w = window.innerWidth;
       if (w >= 1024) setCardSize(360);
       else if (w >= 640) setCardSize(300);
-      else setCardSize(260);
+      else setCardSize(Math.min(300, w - 48));
     };
     updateSize();
     window.addEventListener("resize", updateSize);

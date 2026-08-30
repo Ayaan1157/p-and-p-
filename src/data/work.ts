@@ -17,7 +17,7 @@ export const disciplines: Record<
     label: "Institutional",
     code: "Ia",
     color: "#C00000",
-    tagline: "Civic and cultural spaces designed for permanence and public life.",
+    tagline: "Dynamic learning environments designed to inspire curiosity and community.",
     projects: [
       {
         title: "TVS New School",
@@ -44,7 +44,7 @@ export const disciplines: Record<
       },
       {
         title: "SAAB Engineering",
-        location: "Jigani, Bangalore",
+        location: "Jigani, Bengaluru",
         year: 2025,
         size: "2,000 sqm",
         note: "Shop floor at multiple levels with continuous gantry",
@@ -60,7 +60,7 @@ export const disciplines: Record<
       },
       {
         title: "Veeregowda Factory",
-        location: "Bangalore",
+        location: "Bengaluru",
         year: 2024,
         size: "2,000 sqm",
         images: ["/portfolio/p12.jpg", "/portfolio/p13.jpg"],
@@ -75,7 +75,7 @@ export const disciplines: Record<
       },
       {
         title: "City Fab & Roofing",
-        location: "Peenya, Bangalore",
+        location: "Peenya, Bengaluru",
         year: 2019,
         size: "1,000 sqm",
         note: "Aluminium profile sheet manufacturer",
@@ -99,7 +99,7 @@ export const disciplines: Record<
     projects: [
       {
         title: "KSCA",
-        location: "Alur, Bangalore",
+        location: "Alur, Bengaluru",
         year: 2018,
         size: "4,500 sqm",
         note: "Indoor sports facility",
@@ -107,7 +107,7 @@ export const disciplines: Record<
       },
       {
         title: "Marks & Spencer",
-        location: "Koramangala, Bangalore",
+        location: "Koramangala, Bengaluru",
         year: 2015,
         size: "8,000 sqm",
         note: "Commercial complex opp. Sony World",
@@ -123,7 +123,7 @@ export const disciplines: Record<
     projects: [
       {
         title: "Brigade Omega Residence",
-        location: "Bangalore",
+        location: "Bengaluru",
         year: 2020,
         size: "2,400 sft",
         note: "CX: Sai Ramanan",
@@ -131,14 +131,14 @@ export const disciplines: Record<
       },
       {
         title: "Private Residence",
-        location: "Bangalore",
+        location: "Bengaluru",
         year: 2022,
         size: "—",
         images: ["/portfolio/p33.jpg", "/portfolio/p34.jpg", "/portfolio/p35.jpg", "/portfolio/p36.jpg"],
       },
       {
         title: "Private Residence",
-        location: "Bangalore",
+        location: "Bengaluru",
         year: 2017,
         size: "2,200 sft",
         images: ["/portfolio/p37.jpg", "/portfolio/p43.jpg", "/portfolio/p44.jpg"],

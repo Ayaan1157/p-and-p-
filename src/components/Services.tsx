@@ -17,8 +17,8 @@ export function Services() {
       <div className="mx-auto max-w-[1600px] px-6 md:px-12">
         <div className="flex flex-wrap items-end justify-between gap-8">
           <div className="reveal max-w-xl">
-            <p className="eyebrow">Practices</p>
-            <h2 className="mt-6 whitespace-nowrap font-serif text-[clamp(2.25rem,5vw,4.5rem)] leading-[1.05]">
+            <p className="eyebrow">Practice</p>
+            <h2 className="mt-6 font-serif text-[clamp(2.25rem,5vw,4.5rem)] leading-[1.05]">
               Four disciplines, <span style={{ color: "var(--gold)" }}>one hand.</span>
             </h2>
           </div>

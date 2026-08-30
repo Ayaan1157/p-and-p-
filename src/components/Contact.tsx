@@ -3,7 +3,7 @@ import { useState } from "react";
 export function Contact() {
   const [sent, setSent] = useState(false);
   return (
-    <section id="contact" className="relative border-t py-32 md:py-44" style={{ borderColor: "var(--border)" }}>
+    <section id="contact" className="relative overflow-hidden border-t py-32 md:py-44" style={{ borderColor: "var(--border)" }}>
       <span className="ghost-numeral absolute right-4 top-10 text-[18vw] md:right-12">04</span>
       <div className="mx-auto grid max-w-[1600px] grid-cols-1 gap-16 px-6 md:grid-cols-12 md:gap-24 md:px-12">
         <div className="md:col-span-5">

@@ -5,7 +5,7 @@ export function Footer() {
         <div>
           <p className="font-serif text-3xl">Paper And Pencil</p>
           <p className="mt-6 max-w-xs text-sm font-light leading-relaxed" style={{ color: "var(--grey-soft)" }}>
-            Drawn by hand in a quiet room in Bangalore.
+            Drawn by hand in a quiet room in Bengaluru.
           </p>
         </div>
         <div>
@@ -27,7 +27,7 @@ export function Footer() {
       </div>
       <div className="mx-auto mt-20 flex max-w-[1600px] flex-col items-start justify-between gap-4 border-t px-6 pt-8 text-[10px] uppercase tracking-[0.3em] md:flex-row md:items-center md:px-12" style={{ borderColor: "var(--border)", color: "var(--grey)" }}>
         <p>© {new Date().getFullYear()} Paper And Pencil. All rights reserved.</p>
-        <p>Drawn with patience · London</p>
+        <p>Drawn with patience · Bengaluru</p>
       </div>
     </footer>
   );

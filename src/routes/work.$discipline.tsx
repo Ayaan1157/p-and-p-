@@ -111,26 +111,34 @@ function WorkPage() {
               className="border-t pt-10 md:pt-14 scroll-mt-28"
               style={{ borderColor: "var(--border)" }}
             >
-              <div className="grid grid-cols-12 items-baseline gap-4">
-                <span className="col-span-2 font-serif text-sm md:text-base" style={{ color: d.color }}>
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <div className="col-span-10 md:col-span-6">
-                  <h2 className="font-serif text-2xl md:text-4xl">{p.title}</h2>
-                  {p.note && (
-                    <p className="mt-3 text-sm font-light leading-relaxed" style={{ color: "var(--grey-soft)" }}>
-                      {p.note}
-                    </p>
-                  )}
+              <div className="flex flex-col gap-6 md:grid md:grid-cols-12 md:items-baseline md:gap-4">
+                <div className="flex items-start gap-4 col-span-8">
+                  <span className="font-serif text-sm md:text-base shrink-0" style={{ color: d.color }}>
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div className="space-y-3">
+                    <h2 className="font-serif text-2xl md:text-4xl">{p.title}</h2>
+                    {p.note && (
+                      <p className="text-sm font-light leading-relaxed" style={{ color: "var(--grey-soft)" }}>
+                        {p.note}
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <div className="col-span-4 md:col-span-2 text-[11px] uppercase tracking-[0.28em]" style={{ color: "var(--grey)" }}>
-                  {p.location}
-                </div>
-                <div className="col-span-4 md:col-span-1 text-[11px] uppercase tracking-[0.28em]" style={{ color: "var(--grey)" }}>
-                  {p.size}
-                </div>
-                <div className="col-span-4 md:col-span-1 text-right font-serif text-base" style={{ color: "var(--gold)" }}>
-                  {p.year}
+
+                <div className="flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-border/40 pt-4 md:pt-0 md:border-0 md:col-span-4 md:grid md:grid-cols-4 md:items-baseline md:gap-4">
+                  <div className="flex flex-col gap-1 md:col-span-2 text-[11px] uppercase tracking-[0.28em] text-grey-soft md:text-[var(--grey)]">
+                    <span className="text-[9px] opacity-50 md:hidden">Location</span>
+                    <span>{p.location}</span>
+                  </div>
+                  <div className="flex flex-col gap-1 md:col-span-1 text-[11px] uppercase tracking-[0.28em] text-grey-soft md:text-[var(--grey)]">
+                    <span className="text-[9px] opacity-50 md:hidden">Size</span>
+                    <span>{p.size}</span>
+                  </div>
+                  <div className="flex flex-col gap-1 ml-auto md:ml-0 md:col-span-1 font-serif text-base text-right md:text-right" style={{ color: "var(--gold)" }}>
+                    <span className="text-[9px] font-sans uppercase tracking-[0.28em] text-grey-soft opacity-50 md:hidden text-right">Year</span>
+                    <span>{p.year}</span>
+                  </div>
                 </div>
               </div>
 

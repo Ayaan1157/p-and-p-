@@ -1,0 +1,9 @@
+node_modules
+.vercel
+.output
+.vinxi
+.tanstack
+.nitro
+dist
+dist-ssr
+*.log
