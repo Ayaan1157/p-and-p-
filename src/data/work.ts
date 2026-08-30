@@ -118,7 +118,7 @@ export const disciplines: Record<
   residential: {
     label: "Residential",
     code: "Ra",
-    color: "#EBAF04",
+    color: "#F0C440",
     tagline: "Habitats shaped around the rhythms of the people who live in them.",
     projects: [
       {

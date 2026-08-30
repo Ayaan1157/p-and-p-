@@ -119,7 +119,10 @@ function WorkPage() {
 
       <section
         className="relative overflow-hidden pt-40 pb-24 md:pt-48 md:pb-32"
-        style={{ background: d.color, color: "var(--cream)" }}
+        style={{
+          background: d.color,
+          color: discipline === "residential" ? "#0f0f10" : "var(--cream)",
+        }}
       >
         <span className="ghost-numeral absolute -left-2 top-20 text-[22vw] opacity-40 md:left-8">{d.code}</span>
         <div className="relative mx-auto max-w-[1600px] px-6 md:px-12">
