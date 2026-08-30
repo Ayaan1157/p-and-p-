@@ -3,7 +3,10 @@ export function Footer() {
     <footer id="footer" className="border-t pt-24 pb-12" style={{ borderColor: "var(--border)", background: "var(--navy-deep)" }}>
       <div className="mx-auto grid max-w-[1600px] grid-cols-1 gap-16 px-6 md:grid-cols-3 md:px-12">
         <div>
-          <p className="font-serif text-3xl uppercase tracking-wider">PAPER AND PENCIL</p>
+          <p className="font-sans text-2xl font-normal uppercase tracking-[0.24em] text-cream">PAPER AND PENCIL</p>
+          <p className="mt-2 text-[10px] uppercase tracking-[0.27em]" style={{ color: "var(--gold)" }}>
+            ART | ARCHITECTURE | INTERIORS
+          </p>
           <p className="mt-6 max-w-xs text-sm font-light leading-relaxed" style={{ color: "var(--grey-soft)" }}>
             Drawn by hand in a quiet room in Bengaluru.
           </p>
