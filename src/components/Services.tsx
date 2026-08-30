@@ -23,7 +23,7 @@ export function Services() {
             </h2>
           </div>
           <p className="reveal reveal-delay-1 max-w-sm text-sm font-light leading-relaxed" style={{ color: "var(--grey-soft)" }}>
-            Everything begins with paper and pencil
+            Everything begins with a paper and pencil
           </p>
         </div>
 
