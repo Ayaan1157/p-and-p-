@@ -21,8 +21,10 @@ function AdminPage() {
     enquiries,
     reviews,
     isAdmin,
-    loginAdmin,
+    userSession,
+    loginWithEmailPassword,
     logoutAdmin,
+    logoutUser,
     updateEnquiryStatus,
     deleteEnquiry,
     updateReviewStatus,
@@ -34,7 +36,9 @@ function AdminPage() {
     resetToDefaults,
   } = useAppStore();
 
+  const [emailInput, setEmailInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
+  const [nameInput, setNameInput] = useState("");
   const [loginError, setLoginError] = useState(false);
   const [activeTab, setActiveTab] = useState<"projects" | "practices" | "enquiries" | "reviews">("projects");
 
@@ -55,89 +59,12 @@ function AdminPage() {
   const [practiceEditingKey, setPracticeEditingKey] = useState<Discipline | null>(null);
   const [practiceForm, setPracticeForm] = useState({ label: "", tagline: "", code: "", color: "" });
 
-  const handleAdminLogin = (e: React.FormEvent) => {
+  const handleSignIn = (e: React.FormEvent) => {
     e.preventDefault();
-    const success = loginAdmin(passwordInput);
-    if (success) {
-      setLoginError(false);
-      setPasswordInput("");
-    } else {
-      setLoginError(true);
-    }
-  };
+    if (!emailInput.trim()) return;
 
-  // Helper for image upload -> Base64 Data URL
-  const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
-    Array.from(files).forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          const resultStr = event.target.result as string;
-          setProjectForm((prev) => ({
-            ...prev,
-            images: [...prev.images, resultStr],
-          }));
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const handleAddImageUrl = () => {
-    if (!imageUrlInput.trim()) return;
-    setProjectForm((prev) => ({
-      ...prev,
-      images: [...prev.images, imageUrlInput.trim()],
-    }));
-    setImageUrlInput("");
-  };
-
-  const handleSaveProject = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!projectForm.title.trim()) return;
-
-    if (editingProjectIdx !== null) {
-      updateProject(selectedDiscipline, editingProjectIdx, projectForm);
-    } else {
-      addProject(selectedDiscipline, projectForm);
-    }
-
-    // Reset project form
-    setEditingProjectIdx(null);
-    setProjectForm({
-      title: "",
-      location: "",
-      year: new Date().getFullYear(),
-      size: "",
-      note: "",
-      images: [],
-    });
-  };
-
-  const startEditProject = (idx: number, p: Project) => {
-    setEditingProjectIdx(idx);
-    setProjectForm({ ...p, images: [...p.images] });
-  };
-
-  const startEditPractice = (key: Discipline) => {
-    setPracticeEditingKey(key);
-    const d = disciplines[key];
-    setPracticeForm({
-      label: d.label,
-      tagline: d.tagline,
-      code: d.code,
-      color: d.color,
-    });
-  };
-
-  const handleSavePractice = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!practiceEditingKey) return;
-    updatePractice(practiceEditingKey, practiceForm);
-    setPracticeEditingKey(null);
+    loginWithEmailPassword(emailInput, passwordInput, nameInput);
+    setPasswordInput("");
   };
 
   if (!isAdmin) {
@@ -148,38 +75,87 @@ function AdminPage() {
 
         <div className="mx-auto flex w-full max-w-md flex-1 items-center justify-center px-6 py-32">
           <div className="w-full rounded-sm border border-gold/40 bg-ink-soft p-8 md:p-10 shadow-2xl">
-            <div className="flex items-center gap-3 text-gold">
-              <Lock size={24} />
-              <h1 className="font-serif text-2xl text-cream">Admin Authentication</h1>
-            </div>
-            <p className="mt-3 text-xs leading-relaxed text-grey-soft">
-              Enter admin password to manage projects, practice disciplines, client enquiries, and customer reviews.
-            </p>
-
-            <form onSubmit={handleAdminLogin} className="mt-8 space-y-5">
-              <div>
-                <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-2">Password</label>
-                <input
-                  type="password"
-                  required
-                  value={passwordInput}
-                  onChange={(e) => setPasswordInput(e.target.value)}
-                  placeholder="Enter admin password (default: admin123)"
-                  className="w-full border border-border bg-ink px-4 py-3 text-sm text-cream placeholder:text-grey/40 focus:border-gold focus:outline-none"
-                />
+            {userSession ? (
+              <div className="space-y-6 text-center py-4">
+                <div className="inline-flex h-16 w-16 items-center justify-center rounded-full border border-gold/40 bg-gold/10 text-2xl text-gold">
+                  ✓
+                </div>
+                <div>
+                  <h1 className="font-serif text-2xl text-cream">Welcome, {userSession.name}</h1>
+                  <p className="mt-2 text-xs text-grey-soft">
+                    Signed in as <span className="text-gold font-mono">{userSession.email}</span>
+                  </p>
+                </div>
+                <div className="pt-4 flex flex-col gap-3">
+                  <a
+                    href="/#testimonials"
+                    className="border border-gold bg-gold px-6 py-3 text-xs uppercase tracking-[0.28em] text-black font-semibold hover:bg-gold/90 text-center"
+                  >
+                    Write a Review →
+                  </a>
+                  <button
+                    onClick={logoutUser}
+                    className="border border-border/60 bg-ink p-3 text-xs uppercase tracking-[0.25em] text-grey-soft hover:text-cream hover:border-gold"
+                  >
+                    Sign Out / Switch Account
+                  </button>
+                </div>
               </div>
+            ) : (
+              <>
+                <div className="flex items-center gap-3 text-gold">
+                  <Lock size={22} />
+                  <h1 className="font-serif text-2xl text-cream">Sign In</h1>
+                </div>
+                <p className="mt-2 text-xs leading-relaxed text-grey-soft">
+                  Enter your email and password to sign in.
+                </p>
 
-              {loginError && (
-                <p className="text-xs text-red-400">Invalid password. Please try again.</p>
-              )}
+                <form onSubmit={handleSignIn} className="mt-6 space-y-4">
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-1">Email Address</label>
+                    <input
+                      type="email"
+                      required
+                      value={emailInput}
+                      onChange={(e) => setEmailInput(e.target.value)}
+                      placeholder="you@example.com"
+                      className="w-full border border-border bg-ink px-4 py-2.5 text-sm text-cream placeholder:text-grey/40 focus:border-gold focus:outline-none"
+                    />
+                  </div>
 
-              <button
-                type="submit"
-                className="w-full border border-gold bg-gold/10 py-3 text-xs uppercase tracking-[0.32em] text-gold transition-colors hover:bg-gold hover:text-black font-medium"
-              >
-                Log In as Admin
-              </button>
-            </form>
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-1">Password</label>
+                    <input
+                      type="password"
+                      required
+                      value={passwordInput}
+                      onChange={(e) => setPasswordInput(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full border border-border bg-ink px-4 py-2.5 text-sm text-cream placeholder:text-grey/40 focus:border-gold focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-1">Full Name (Optional)</label>
+                    <input
+                      type="text"
+                      value={nameInput}
+                      onChange={(e) => setNameInput(e.target.value)}
+                      placeholder="Your Name"
+                      className="w-full border border-border bg-ink px-4 py-2.5 text-sm text-cream placeholder:text-grey/40 focus:border-gold focus:outline-none"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full border border-gold bg-gold/10 py-3 text-xs uppercase tracking-[0.32em] text-gold transition-colors hover:bg-gold hover:text-black font-medium mt-2"
+                  >
+                    Sign In
+                  </button>
+                </form>
+              </>
+            )}
           </div>
         </div>
 

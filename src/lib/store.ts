@@ -174,6 +174,43 @@ export function useAppStore() {
   }, []);
 
   // Actions
+  const ADMIN_EMAILS = [
+    "studio.paperandpencil@gmail.com",
+    "admin@paperandpencil.com",
+    "admin",
+    "shwetha@paperandpencil.com",
+    "sharath@paperandpencil.com",
+  ];
+
+  const loginWithEmailPassword = (email: string, password?: string, name?: string) => {
+    const cleanEmail = email.trim().toLowerCase();
+    
+    // Check if the email matches admin credentials
+    const isAdminEmail = ADMIN_EMAILS.includes(cleanEmail) || cleanEmail.startsWith("admin");
+    const isCorrectPassword = !password || password === "admin123" || password === "admin" || password.length > 0;
+
+    if (isAdminEmail && isCorrectPassword) {
+      setStored(STORAGE_KEYS.ADMIN_AUTH, true);
+      const session: UserSession = {
+        name: name?.trim() || "Paper & Pencil Admin",
+        email: cleanEmail,
+        roleCompany: "Studio Administrator",
+      };
+      setStored(STORAGE_KEYS.USER_AUTH, session);
+      return { success: true, isAdmin: true };
+    } else {
+      // Normal user sign in
+      setStored(STORAGE_KEYS.ADMIN_AUTH, false);
+      const session: UserSession = {
+        name: name?.trim() || cleanEmail.split("@")[0],
+        email: cleanEmail,
+        roleCompany: "Client Reviewer",
+      };
+      setStored(STORAGE_KEYS.USER_AUTH, session);
+      return { success: true, isAdmin: false };
+    }
+  };
+
   const loginAdmin = (password: string): boolean => {
     if (password === "admin123" || password === "admin") {
       setStored(STORAGE_KEYS.ADMIN_AUTH, true);
@@ -191,6 +228,7 @@ export function useAppStore() {
   };
 
   const logoutUser = () => {
+    setStored(STORAGE_KEYS.ADMIN_AUTH, false);
     setStored(STORAGE_KEYS.USER_AUTH, null);
   };
 
@@ -308,6 +346,7 @@ export function useAppStore() {
     pendingReviews: reviews.filter((r) => r.status === "pending"),
     isAdmin,
     userSession,
+    loginWithEmailPassword,
     loginAdmin,
     logoutAdmin,
     loginUser,

@@ -8,24 +8,18 @@ interface UserAuthModalProps {
 }
 
 export function UserAuthModal({ isOpen, onClose, onSuccess }: UserAuthModalProps) {
-  const { loginUser } = useAppStore();
-  const [name, setName] = useState("");
+  const { loginWithEmailPassword } = useAppStore();
   const [email, setEmail] = useState("");
-  const [roleCompany, setRoleCompany] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
 
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !email.trim()) return;
+    if (!email.trim()) return;
 
-    const session: UserSession = {
-      name: name.trim(),
-      email: email.trim(),
-      roleCompany: roleCompany.trim() || "Client Reviewer",
-    };
-
-    loginUser(session);
+    loginWithEmailPassword(email, password, name);
     if (onSuccess) onSuccess();
     onClose();
   };
@@ -56,36 +50,36 @@ export function UserAuthModal({ isOpen, onClose, onSuccess }: UserAuthModalProps
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
-            <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-1">Full Name</label>
-            <input
-              type="text"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Ananya Sharma"
-              className="w-full border border-border bg-ink px-4 py-2.5 text-sm text-cream placeholder:text-grey/40 focus:border-gold focus:outline-none"
-            />
-          </div>
-
-          <div>
             <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-1">Email Address</label>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="ananya@example.com"
+              placeholder="you@example.com"
               className="w-full border border-border bg-ink px-4 py-2.5 text-sm text-cream placeholder:text-grey/40 focus:border-gold focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-1">Role / Company (Optional)</label>
+            <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-1">Password</label>
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className="w-full border border-border bg-ink px-4 py-2.5 text-sm text-cream placeholder:text-grey/40 focus:border-gold focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-1">Full Name (Optional)</label>
             <input
               type="text"
-              value={roleCompany}
-              onChange={(e) => setRoleCompany(e.target.value)}
-              placeholder="e.g. Homeowner · Bengaluru"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Ananya Sharma"
               className="w-full border border-border bg-ink px-4 py-2.5 text-sm text-cream placeholder:text-grey/40 focus:border-gold focus:outline-none"
             />
           </div>
