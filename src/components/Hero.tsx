@@ -27,7 +27,7 @@ export function Hero() {
     <section id="top" className="relative isolate h-screen min-h-[720px] w-full overflow-hidden">
       <div ref={imgRef} className="absolute inset-0 -z-10 will-change-transform">
         <video
-          src="/Modern_house_in_foggy_forest_202605310148 (online-video-cutter.com).mp4"
+          src="/Person_walking_by_modern_distillery_202609012037 (online-video-cutter.com).mp4"
           autoPlay
           muted
           loop
