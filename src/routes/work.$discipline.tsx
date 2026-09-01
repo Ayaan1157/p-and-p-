@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { disciplines, type Discipline } from "@/data/work";
+import { disciplines, slugify, type Discipline } from "@/data/work";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { CustomCursor } from "@/components/CustomCursor";
@@ -77,12 +77,18 @@ function WorkPage() {
     const hash = window.location.hash;
     if (hash) {
       const id = decodeURIComponent(hash.substring(1));
-      const element = document.getElementById(id);
-      if (element) {
-        setTimeout(() => {
+      const scrollToTarget = () => {
+        const element = document.getElementById(id);
+        if (element) {
           element.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 150);
-      }
+        }
+      };
+      const t1 = setTimeout(scrollToTarget, 100);
+      const t2 = setTimeout(scrollToTarget, 400);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
     }
   }, [discipline]);
 
@@ -143,8 +149,8 @@ function WorkPage() {
           {d.projects.map((p, pIdx) => (
             <article
               key={`${p.title}-${pIdx}`}
-              id={p.title.replace(/\s+/g, "-").toLowerCase()}
-              className="border-t pt-10 md:pt-14 scroll-mt-28"
+              id={slugify(p.title)}
+              className="border-t pt-10 md:pt-14 scroll-mt-32"
               style={{ borderColor: "var(--border)" }}
             >
               <div className="flex flex-col gap-6 md:grid md:grid-cols-12 md:items-baseline md:gap-4">
@@ -197,7 +203,7 @@ function WorkPage() {
                           imageIndex: imgIdx,
                         })
                       }
-                      className="group relative cursor-pointer overflow-hidden border border-border/40 rounded-sm shadow-lg transition-all duration-500 hover:border-gold/60"
+                      className="group relative cursor-pointer overflow-hidden border border-border/40 rounded-sm shadow-lg transition-all duration-500 hover:border-gold/60 aspect-[16/9]"
                       style={{ background: "var(--navy-deep)" }}
                     >
                       <img
@@ -205,7 +211,7 @@ function WorkPage() {
                         alt={`${p.title} — view ${imgIdx + 1}`}
                         loading="lazy"
                         decoding="async"
-                        className="block h-auto w-full transition-transform duration-700 ease-[var(--ease-luxury)] group-hover:scale-[1.03]"
+                        className="block h-full w-full object-cover transition-transform duration-700 ease-[var(--ease-luxury)] group-hover:scale-[1.03]"
                         style={{ borderTop: `4px solid ${d.color}` }}
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">

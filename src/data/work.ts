@@ -9,6 +9,13 @@ export type Project = {
   images: string[];
 };
 
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
+}
+
 export const disciplines: Record<
   Discipline,
   { label: string; code: string; color: string; tagline: string; projects: Project[] }

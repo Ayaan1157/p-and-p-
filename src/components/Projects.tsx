@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { disciplines, type Discipline } from "@/data/work";
+import { disciplines, slugify, type Discipline } from "@/data/work";
 
 type Tile = {
   src: string;
@@ -102,7 +102,7 @@ export function Projects() {
                 key={`${t.src}-${i}`}
                 to="/work/$discipline"
                 params={{ discipline: t.discipline }}
-                hash={t.title.replace(/\s+/g, "-").toLowerCase()}
+                hash={slugify(t.title)}
                 data-cursor="hover"
                 className={`collage-tile group relative block overflow-hidden ${span.sm} ${span.md}`}
                 style={{
