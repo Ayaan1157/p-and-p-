@@ -1,17 +1,19 @@
 import { Link } from "@tanstack/react-router";
-import { disciplines, type Discipline } from "@/data/work";
-
-const services = (Object.entries(disciplines) as [Discipline, typeof disciplines[Discipline]][]).map(
-  ([slug, d], i) => ({
-    slug,
-    n: String(i + 1).padStart(2, "0"),
-    title: d.label,
-    desc: d.tagline,
-    color: d.color,
-  })
-);
+import { type Discipline } from "@/data/work";
+import { useAppStore } from "@/lib/store";
 
 export function Services() {
+  const { disciplines } = useAppStore();
+
+  const services = (Object.entries(disciplines) as [Discipline, typeof disciplines[Discipline]][]).map(
+    ([slug, d], i) => ({
+      slug,
+      n: String(i + 1).padStart(2, "0"),
+      title: d.label,
+      desc: d.tagline,
+      color: d.color,
+    })
+  );
   return (
     <section id="services" className="relative border-t py-32 md:py-44" style={{ borderColor: "var(--border)", background: "var(--navy-deep)" }}>
       <div className="mx-auto max-w-[1600px] px-6 md:px-12">

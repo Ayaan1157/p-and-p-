@@ -4,6 +4,7 @@ import { disciplines, slugify, type Discipline } from "@/data/work";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { CustomCursor } from "@/components/CustomCursor";
+import { useAppStore } from "@/lib/store";
 
 const valid = Object.keys(disciplines) as Discipline[];
 
@@ -63,6 +64,7 @@ export const Route = createFileRoute("/work/$discipline")({
 
 function WorkPage() {
   const { discipline } = Route.useParams();
+  const { disciplines } = useAppStore();
   const d = disciplines[discipline as Discipline];
   const others = (Object.entries(disciplines) as [Discipline, typeof d][]).filter(([k]) => k !== discipline);
 

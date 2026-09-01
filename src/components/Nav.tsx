@@ -48,16 +48,19 @@ export function Nav() {
             />
           </a>
           
-          <nav className="hidden gap-10 text-xs uppercase tracking-[0.28em] text-grey-soft md:flex">
+          <nav className="hidden gap-8 text-xs uppercase tracking-[0.28em] text-grey-soft md:flex items-center">
             <a className="link-underline" href="/#studio">Studio</a>
             <a className="link-underline" href="/#services">Services</a>
             <a className="link-underline" href="/#projects">Projects</a>
             <a className="link-underline" href="/#process">Process</a>
+            <a className="link-underline text-gold/80 hover:text-gold" href="/admin">Admin</a>
           </nav>
           
-          <a href="/#contact" className="hidden text-xs uppercase tracking-[0.28em] md:inline-flex" style={{ color: "var(--gold)" }}>
-            <span className="link-underline">Enquire →</span>
-          </a>
+          <div className="hidden items-center gap-6 md:flex text-xs uppercase tracking-[0.28em]">
+            <a href="/#contact" style={{ color: "var(--gold)" }}>
+              <span className="link-underline">Enquire →</span>
+            </a>
+          </div>
 
           {/* Mobile menu toggle */}
           <button
@@ -97,14 +100,15 @@ export function Nav() {
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex flex-col gap-8 mt-24 text-sm uppercase tracking-[0.28em] text-grey-soft">
+        <div className="flex flex-col gap-6 mt-24 text-sm uppercase tracking-[0.28em] text-grey-soft">
           <a className="link-underline w-fit" href="/#studio" onClick={() => setIsOpen(false)}>Studio</a>
           <a className="link-underline w-fit" href="/#services" onClick={() => setIsOpen(false)}>Services</a>
           <a className="link-underline w-fit" href="/#projects" onClick={() => setIsOpen(false)}>Projects</a>
           <a className="link-underline w-fit" href="/#process" onClick={() => setIsOpen(false)}>Process</a>
+          <a className="link-underline w-fit text-gold" href="/admin" onClick={() => setIsOpen(false)}>Admin Panel</a>
         </div>
 
-        <div className="text-sm uppercase tracking-[0.28em] mb-6">
+        <div className="text-sm uppercase tracking-[0.28em] mb-6 flex flex-col gap-4">
           <a href="/#contact" onClick={() => setIsOpen(false)} style={{ color: "var(--gold)" }}>
             <span className="link-underline">Enquire →</span>
           </a>

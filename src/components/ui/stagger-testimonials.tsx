@@ -1,49 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, PenTool } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAppStore } from "@/lib/store";
+import { ReviewModal } from "@/components/ReviewModal";
 
 export interface Testimonial {
   tempId: number;
   testimonial: string;
   by: string;
 }
-
-const initial: Testimonial[] = [
-  {
-    tempId: 0,
-    testimonial:
-      "We had an amazing experience working with Sharath. His creativity, attention to detail, and ability to understand our vision were truly exceptional. Sharath and his team transformed our house into a beautiful, functional, and personalized home.",
-    by: "Rahul Joshi · Google Review",
-  },
-  {
-    tempId: 1,
-    testimonial:
-      "Highly appreciate Sharath's exceptional design skills. His team is efficient in executing the project. They made the process smooth and stress-free, considering my requirement.",
-    by: "Shwetha Rao · Local Guide",
-  },
-  {
-    tempId: 2,
-    testimonial:
-      "Sharath and his team did an excellent, awesome job. On time delivery as promised and thereby exceeding customer expectations. Kudos, will definitely recommend.",
-    by: "Anandkumar Venkataraman · Google Review",
-  },
-  {
-    tempId: 3,
-    testimonial:
-      "One of the best architects you can find in Bengaluru. Very nice and interesting designs.",
-    by: "Shruthi Iyer · Google Review",
-  },
-  {
-    tempId: 4,
-    testimonial: "Good and finest architect with great sense of detailing.",
-    by: "Shekar · Google Review",
-  },
-  {
-    tempId: 5,
-    testimonial: "Simply superb.",
-    by: "Sachin Ravikumar · Google Review",
-  },
-];
 
 interface CardProps {
   position: number;
@@ -102,13 +67,26 @@ const Card: React.FC<CardProps> = ({ position, testimonial, handleMove, cardSize
   );
 };
 
-export const StaggerTestimonials: React.FC<{ items?: Testimonial[] }> = ({
-  items = initial,
-}) => {
+export const StaggerTestimonials: React.FC = () => {
+  const { approvedReviews } = useAppStore();
   const [cardSize, setCardSize] = useState(360);
-  const [list, setList] = useState<Testimonial[]>(items);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+
+  // Convert approved dynamic reviews from store to Testimonial interface format
+  const formattedItems: Testimonial[] = approvedReviews.map((r, i) => ({
+    tempId: i,
+    testimonial: r.testimonial,
+    by: `${r.by}${r.roleCompany ? ` · ${r.roleCompany}` : ""}`,
+  }));
+
+  const [list, setList] = useState<Testimonial[]>(formattedItems);
+
+  useEffect(() => {
+    setList(formattedItems);
+  }, [approvedReviews]);
 
   const handleMove = (steps: number) => {
+    if (list.length === 0) return;
     const newList = [...list];
     if (steps > 0) {
       for (let i = steps; i > 0; i--) {
@@ -139,44 +117,62 @@ export const StaggerTestimonials: React.FC<{ items?: Testimonial[] }> = ({
   }, []);
 
   return (
-    <div
-      className="relative w-full overflow-hidden"
-      style={{ height: cardSize + 180 }}
-    >
-      {list.map((t, index) => {
-        const position =
-          list.length % 2
-            ? index - (list.length + 1) / 2
-            : index - list.length / 2;
-        return (
-          <Card
-            key={t.tempId}
-            testimonial={t}
-            handleMove={handleMove}
-            position={position}
-            cardSize={cardSize}
-          />
-        );
-      })}
+    <div className="relative w-full flex flex-col items-center">
+      <div
+        className="relative w-full overflow-hidden"
+        style={{ height: cardSize + 180 }}
+      >
+        {list.map((t, index) => {
+          const position =
+            list.length % 2
+              ? index - (list.length + 1) / 2
+              : index - list.length / 2;
+          return (
+            <Card
+              key={t.tempId}
+              testimonial={t}
+              handleMove={handleMove}
+              position={position}
+              cardSize={cardSize}
+            />
+          );
+        })}
 
-      <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-4 z-30">
+        <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 items-center gap-4 z-30">
+          <button
+            onClick={() => handleMove(-1)}
+            aria-label="Previous"
+            className="flex h-12 w-12 items-center justify-center border transition-colors duration-500 hover:bg-[var(--gold)] hover:text-black"
+            style={{ borderColor: "var(--gold)", color: "var(--gold)" }}
+          >
+            <ChevronLeft size={18} />
+          </button>
+          <button
+            onClick={() => handleMove(1)}
+            aria-label="Next"
+            className="flex h-12 w-12 items-center justify-center border transition-colors duration-500 hover:bg-[var(--gold)] hover:text-black"
+            style={{ borderColor: "var(--gold)", color: "var(--gold)" }}
+          >
+            <ChevronRight size={18} />
+          </button>
+        </div>
+      </div>
+
+      {/* Write a Review Button */}
+      <div className="mt-8 z-30">
         <button
-          onClick={() => handleMove(-1)}
-          aria-label="Previous"
-          className="flex h-12 w-12 items-center justify-center border transition-colors duration-500 hover:bg-[var(--gold)] hover:text-black"
-          style={{ borderColor: "var(--gold)", color: "var(--gold)" }}
+          onClick={() => setIsReviewModalOpen(true)}
+          className="group inline-flex items-center gap-3 border border-gold/60 bg-gold/10 px-6 py-3 text-xs uppercase tracking-[0.28em] text-gold transition-all duration-500 hover:bg-gold hover:text-black"
         >
-          <ChevronLeft size={18} />
-        </button>
-        <button
-          onClick={() => handleMove(1)}
-          aria-label="Next"
-          className="flex h-12 w-12 items-center justify-center border transition-colors duration-500 hover:bg-[var(--gold)] hover:text-black"
-          style={{ borderColor: "var(--gold)", color: "var(--gold)" }}
-        >
-          <ChevronRight size={18} />
+          <PenTool size={14} /> Write a Review
         </button>
       </div>
+
+      <ReviewModal
+        isOpen={isReviewModalOpen}
+        onClose={() => setIsReviewModalOpen(false)}
+      />
     </div>
   );
 };
+

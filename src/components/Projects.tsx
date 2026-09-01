@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { disciplines, slugify, type Discipline } from "@/data/work";
+import { slugify, type Discipline } from "@/data/work";
+import { useAppStore, type DisciplinesData } from "@/lib/store";
 
 type Tile = {
   src: string;
@@ -11,7 +12,7 @@ type Tile = {
 };
 
 // Interleave project images from each discipline to get a perfect mix of categories
-const getMixedTiles = (): Tile[] => {
+const getMixedTiles = (disciplines: DisciplinesData): Tile[] => {
   const list: Record<Discipline, Tile[]> = {
     institutional: [],
     industrial: [],
@@ -53,8 +54,6 @@ const getMixedTiles = (): Tile[] => {
   return mixed.slice(0, 17); // Take exactly 17 items for the treemap grid
 };
 
-const tiles = getMixedTiles();
-
 // Mathematically packing spans for 2 columns on mobile and 8 columns on desktop
 const layoutSpans = [
   { sm: "col-span-2 row-span-2", md: "md:col-span-3 md:row-span-2" },
@@ -77,6 +76,8 @@ const layoutSpans = [
 ];
 
 export function Projects() {
+  const { disciplines } = useAppStore();
+  const tiles = getMixedTiles(disciplines);
   return (
     <section id="projects" className="relative overflow-hidden py-32 md:py-44">
       <span className="ghost-numeral absolute right-2 top-12 text-[18vw] md:right-8">03</span>

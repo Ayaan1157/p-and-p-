@@ -1,7 +1,25 @@
 import { useState } from "react";
+import { useAppStore } from "@/lib/store";
 
 export function Contact() {
+  const { addEnquiry } = useAppStore();
   const [sent, setSent] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "", project: "", message: "" });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.email) return;
+
+    addEnquiry({
+      name: formData.name,
+      email: formData.email,
+      project: formData.project || "General Project Enquiry",
+      message: formData.message || "No specific message provided.",
+    });
+
+    setSent(true);
+  };
+
   return (
     <section id="contact" className="relative overflow-hidden border-t py-32 md:py-44" style={{ borderColor: "var(--border)" }}>
       <span className="ghost-numeral absolute right-4 top-10 text-[18vw] md:right-12">04</span>
@@ -23,27 +41,56 @@ export function Contact() {
 
         <form
           className="reveal reveal-delay-2 md:col-span-7"
-          onSubmit={(e) => {
-            e.preventDefault();
-            setSent(true);
-          }}
+          onSubmit={handleSubmit}
         >
           <div className="grid grid-cols-1 gap-x-10 gap-y-2 md:grid-cols-2">
             <div>
               <label htmlFor="contact-name" className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "var(--gold)" }}>Name</label>
-              <input id="contact-name" name="name" className="field-line" placeholder="Your name" required />
+              <input
+                id="contact-name"
+                name="name"
+                className="field-line"
+                placeholder="Your name"
+                required
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              />
             </div>
             <div>
               <label htmlFor="contact-email" className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "var(--gold)" }}>Email</label>
-              <input id="contact-email" name="email" type="email" className="field-line" placeholder="you@studio.com" required />
+              <input
+                id="contact-email"
+                name="email"
+                type="email"
+                className="field-line"
+                placeholder="you@studio.com"
+                required
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              />
             </div>
             <div className="md:col-span-2">
               <label htmlFor="contact-project" className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "var(--gold)" }}>Project type</label>
-              <input id="contact-project" name="project" className="field-line" placeholder="Hospitality, residence, retail…" />
+              <input
+                id="contact-project"
+                name="project"
+                className="field-line"
+                placeholder="Hospitality, residence, retail…"
+                value={formData.project}
+                onChange={(e) => setFormData({ ...formData, project: e.target.value })}
+              />
             </div>
             <div className="md:col-span-2">
               <label htmlFor="contact-message" className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "var(--gold)" }}>A few words</label>
-              <textarea id="contact-message" name="message" rows={4} className="field-line resize-none" placeholder="What do you want to know" />
+              <textarea
+                id="contact-message"
+                name="message"
+                rows={4}
+                className="field-line resize-none"
+                placeholder="What do you want to know"
+                value={formData.message}
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+              />
             </div>
           </div>
           <button
