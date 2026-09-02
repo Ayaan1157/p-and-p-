@@ -59,6 +59,80 @@ function AdminPage() {
   const [practiceEditingKey, setPracticeEditingKey] = useState<Discipline | null>(null);
   const [practiceForm, setPracticeForm] = useState({ label: "", tagline: "", code: "", color: "" });
 
+  // ── Helper functions ──
+
+  const startEditProject = (idx: number, project: Project) => {
+    setEditingProjectIdx(idx);
+    setProjectForm({ ...project });
+  };
+
+  const handleSaveProject = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!projectForm.title || !projectForm.location) return;
+    if (editingProjectIdx !== null) {
+      updateProject(selectedDiscipline, editingProjectIdx, projectForm);
+    } else {
+      addProject(selectedDiscipline, projectForm);
+    }
+    setEditingProjectIdx(null);
+    setProjectForm({
+      title: "",
+      location: "",
+      year: new Date().getFullYear(),
+      size: "",
+      note: "",
+      images: [],
+    });
+  };
+
+  const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    Array.from(files).forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const result = ev.target?.result as string;
+        if (result) {
+          setProjectForm((prev) => ({
+            ...prev,
+            images: [...prev.images, result],
+          }));
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+    // Reset file input so the same file can be re-selected
+    e.target.value = "";
+  };
+
+  const handleAddImageUrl = () => {
+    const url = imageUrlInput.trim();
+    if (!url) return;
+    setProjectForm((prev) => ({
+      ...prev,
+      images: [...prev.images, url],
+    }));
+    setImageUrlInput("");
+  };
+
+  const startEditPractice = (key: Discipline) => {
+    setPracticeEditingKey(key);
+    const d = disciplines[key];
+    setPracticeForm({
+      label: d.label,
+      tagline: d.tagline,
+      code: d.code,
+      color: d.color,
+    });
+  };
+
+  const handleSavePractice = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!practiceEditingKey) return;
+    updatePractice(practiceEditingKey, practiceForm);
+    setPracticeEditingKey(null);
+  };
+
   const handleSignIn = (e: React.FormEvent) => {
     e.preventDefault();
     if (!emailInput.trim()) return;
