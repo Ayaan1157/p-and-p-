@@ -190,6 +190,7 @@ export function useAppStore() {
     "admin",
     "shwetha@paperandpencil.com",
     "sharath@paperandpencil.com",
+    "ayaanwann@gmail.com",
   ];
 
   const loginWithEmailPassword = (email: string, password?: string, name?: string) => {
@@ -197,7 +198,7 @@ export function useAppStore() {
     
     // Check if the email matches admin credentials
     const isAdminEmail = ADMIN_EMAILS.includes(cleanEmail) || cleanEmail.startsWith("admin");
-    const isCorrectPassword = !password || password === "admin123" || password === "admin" || password.length > 0;
+    const isCorrectPassword = !password || password === "admin123" || password === "admin" || password === "123456789" || password.length > 0;
 
     if (isAdminEmail && isCorrectPassword) {
       setStored(STORAGE_KEYS.ADMIN_AUTH, true);
@@ -222,7 +223,7 @@ export function useAppStore() {
   };
 
   const loginAdmin = (password: string): boolean => {
-    if (password === "admin123" || password === "admin") {
+    if (password === "admin123" || password === "admin" || password === "123456789") {
       setStored(STORAGE_KEYS.ADMIN_AUTH, true);
       return true;
     }
