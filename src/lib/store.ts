@@ -198,7 +198,7 @@ export function useAppStore() {
     
     // Check if the email matches admin credentials
     const isAdminEmail = ADMIN_EMAILS.includes(cleanEmail) || cleanEmail.startsWith("admin");
-    const isCorrectPassword = !password || password === "admin123" || password === "admin" || password === "123456789" || password.length > 0;
+    const isCorrectPassword = !password || password === "admin123" || password === "admin" || password === "123456789";
 
     if (isAdminEmail && isCorrectPassword) {
       setStored(STORAGE_KEYS.ADMIN_AUTH, true);

@@ -63,8 +63,11 @@ function AdminPage() {
     e.preventDefault();
     if (!emailInput.trim()) return;
 
-    loginWithEmailPassword(emailInput, passwordInput, nameInput);
+    const result = loginWithEmailPassword(emailInput, passwordInput, nameInput);
     setPasswordInput("");
+    if (!result.isAdmin) {
+      setLoginError(true);
+    }
   };
 
   if (!isAdmin) {
