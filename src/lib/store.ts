@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { disciplines as defaultDisciplines, type Discipline, type Project } from "@/data/work";
 
 export type Enquiry = {
@@ -173,6 +173,16 @@ export function useAppStore() {
     };
   }, []);
 
+  const approvedReviews = useMemo(
+    () => reviews.filter((r) => r.status === "approved"),
+    [reviews]
+  );
+
+  const pendingReviews = useMemo(
+    () => reviews.filter((r) => r.status === "pending"),
+    [reviews]
+  );
+
   // Actions
   const ADMIN_EMAILS = [
     "studio.paperandpencil@gmail.com",
@@ -342,8 +352,8 @@ export function useAppStore() {
     disciplines,
     enquiries,
     reviews,
-    approvedReviews: reviews.filter((r) => r.status === "approved"),
-    pendingReviews: reviews.filter((r) => r.status === "pending"),
+    approvedReviews,
+    pendingReviews,
     isAdmin,
     userSession,
     loginWithEmailPassword,

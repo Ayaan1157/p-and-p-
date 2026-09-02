@@ -72,21 +72,24 @@ export const StaggerTestimonials: React.FC = () => {
   const [cardSize, setCardSize] = useState(360);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
-  // Convert approved dynamic reviews from store to Testimonial interface format
-  const formattedItems: Testimonial[] = approvedReviews.map((r, i) => ({
-    tempId: i,
-    testimonial: r.testimonial,
-    by: `${r.by}${r.roleCompany ? ` · ${r.roleCompany}` : ""}`,
-  }));
+  // Serialized key to only update list when reviews actually change in store
+  const reviewsContentKey = approvedReviews
+    .map((r) => `${r.id}:${r.testimonial}`)
+    .join("|");
 
-  const [list, setList] = useState<Testimonial[]>(formattedItems);
+  const [list, setList] = useState<Testimonial[]>([]);
 
   useEffect(() => {
+    const formattedItems: Testimonial[] = approvedReviews.map((r, i) => ({
+      tempId: i,
+      testimonial: r.testimonial,
+      by: `${r.by}${r.roleCompany ? ` · ${r.roleCompany}` : ""}`,
+    }));
     setList(formattedItems);
-  }, [approvedReviews]);
+  }, [reviewsContentKey]);
 
   const handleMove = (steps: number) => {
-    if (list.length === 0) return;
+    if (steps === 0 || list.length === 0) return;
     const newList = [...list];
     if (steps > 0) {
       for (let i = steps; i > 0; i--) {
@@ -123,10 +126,8 @@ export const StaggerTestimonials: React.FC = () => {
         style={{ height: cardSize + 180 }}
       >
         {list.map((t, index) => {
-          const position =
-            list.length % 2
-              ? index - (list.length + 1) / 2
-              : index - list.length / 2;
+          const centerIndex = Math.floor(list.length / 2);
+          const position = index - centerIndex;
           return (
             <Card
               key={t.tempId}
