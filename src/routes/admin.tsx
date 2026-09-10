@@ -2,10 +2,11 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useAppStore, type Enquiry, type Review } from "@/lib/store";
 import { type Discipline, type Project } from "@/data/work";
+import { getMixedTiles } from "@/components/Projects";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { CustomCursor } from "@/components/CustomCursor";
-import { Check, X, Trash2, Plus, Image as ImageIcon, Mail, Star, Lock, LogOut, RefreshCw, Edit3 } from "lucide-react";
+import { Check, X, Trash2, Plus, Image as ImageIcon, Mail, Star, Lock, LogOut, RefreshCw, Edit3, UserPlus } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -22,6 +23,8 @@ function AdminPage() {
     reviews,
     isAdmin,
     userSession,
+    registerUser,
+    signInUser,
     loginWithEmailPassword,
     logoutAdmin,
     logoutUser,
@@ -33,14 +36,19 @@ function AdminPage() {
     addProject,
     updateProject,
     deleteProject,
+    customCollage,
+    setCustomCollage,
     resetToDefaults,
   } = useAppStore();
 
+  const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
   const [emailInput, setEmailInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
+  const [confirmPasswordInput, setConfirmPasswordInput] = useState("");
   const [nameInput, setNameInput] = useState("");
+  const [authError, setAuthError] = useState<string | null>(null);
   const [loginError, setLoginError] = useState(false);
-  const [activeTab, setActiveTab] = useState<"projects" | "practices" | "enquiries" | "reviews">("projects");
+  const [activeTab, setActiveTab] = useState<"projects" | "practices" | "enquiries" | "reviews" | "collage">("projects");
 
   // Project Editor state
   const [selectedDiscipline, setSelectedDiscipline] = useState<Discipline>("industrial");
@@ -53,6 +61,11 @@ function AdminPage() {
     note: "",
     images: [],
   });
+
+  // Collage Editor state
+  const currentCollage = customCollage && customCollage.length > 0 ? customCollage : getMixedTiles(disciplines);
+  const [collageDiscipline, setCollageDiscipline] = useState<Discipline>("industrial");
+  const [collageProjectIdx, setCollageProjectIdx] = useState<number>(0);
   const [imageUrlInput, setImageUrlInput] = useState("");
 
   // Practice Editor state
@@ -135,13 +148,48 @@ function AdminPage() {
 
   const handleSignIn = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!emailInput.trim()) return;
+    setAuthError(null);
+    if (!emailInput.trim() || !passwordInput) return;
 
-    const result = loginWithEmailPassword(emailInput, passwordInput, nameInput);
-    setPasswordInput("");
-    if (!result.isAdmin) {
-      setLoginError(true);
+    const result = signInUser(emailInput, passwordInput);
+    if (!result.success) {
+      setAuthError(result.error || "Sign in failed.");
+      return;
     }
+    setPasswordInput("");
+    setEmailInput("");
+  };
+
+  const handleSignUp = (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError(null);
+    if (!emailInput.trim() || !passwordInput || !nameInput.trim()) return;
+
+    if (passwordInput.length < 6) {
+      setAuthError("Password must be at least 6 characters.");
+      return;
+    }
+    if (passwordInput !== confirmPasswordInput) {
+      setAuthError("Passwords do not match.");
+      return;
+    }
+
+    const result = registerUser(emailInput, passwordInput, nameInput);
+    if (!result.success) {
+      setAuthError(result.error || "Registration failed.");
+      return;
+    }
+    setPasswordInput("");
+    setConfirmPasswordInput("");
+    setEmailInput("");
+    setNameInput("");
+  };
+
+  const switchAuthMode = (mode: "signin" | "signup") => {
+    setAuthMode(mode);
+    setAuthError(null);
+    setPasswordInput("");
+    setConfirmPasswordInput("");
   };
 
   if (!isAdmin) {
@@ -180,57 +228,151 @@ function AdminPage() {
               </div>
             ) : (
               <>
-                <div className="flex items-center gap-3 text-gold">
-                  <Lock size={22} />
-                  <h1 className="font-serif text-2xl text-cream">Sign In</h1>
-                </div>
-                <p className="mt-2 text-xs leading-relaxed text-grey-soft">
-                  Enter your email and password to sign in.
-                </p>
-
-                <form onSubmit={handleSignIn} className="mt-6 space-y-4">
-                  <div>
-                    <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-1">Email Address</label>
-                    <input
-                      type="email"
-                      required
-                      value={emailInput}
-                      onChange={(e) => setEmailInput(e.target.value)}
-                      placeholder="you@example.com"
-                      className="w-full border border-border bg-ink px-4 py-2.5 text-sm text-cream placeholder:text-grey/40 focus:border-gold focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-1">Password</label>
-                    <input
-                      type="password"
-                      required
-                      value={passwordInput}
-                      onChange={(e) => setPasswordInput(e.target.value)}
-                      placeholder="••••••••"
-                      className="w-full border border-border bg-ink px-4 py-2.5 text-sm text-cream placeholder:text-grey/40 focus:border-gold focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-1">Full Name (Optional)</label>
-                    <input
-                      type="text"
-                      value={nameInput}
-                      onChange={(e) => setNameInput(e.target.value)}
-                      placeholder="Your Name"
-                      className="w-full border border-border bg-ink px-4 py-2.5 text-sm text-cream placeholder:text-grey/40 focus:border-gold focus:outline-none"
-                    />
-                  </div>
-
+                {/* Sign In / Sign Up Tabs */}
+                <div className="flex border-b border-border/60 mb-6">
                   <button
-                    type="submit"
-                    className="w-full border border-gold bg-gold/10 py-3 text-xs uppercase tracking-[0.32em] text-gold transition-colors hover:bg-gold hover:text-black font-medium mt-2"
+                    onClick={() => switchAuthMode("signin")}
+                    className={`flex-1 flex items-center justify-center gap-2 py-3 text-xs uppercase tracking-[0.25em] border-b-2 transition-colors ${
+                      authMode === "signin"
+                        ? "border-gold text-gold font-medium"
+                        : "border-transparent text-grey-soft hover:text-cream"
+                    }`}
                   >
-                    Sign In
+                    <Lock size={14} /> Sign In
                   </button>
-                </form>
+                  <button
+                    onClick={() => switchAuthMode("signup")}
+                    className={`flex-1 flex items-center justify-center gap-2 py-3 text-xs uppercase tracking-[0.25em] border-b-2 transition-colors ${
+                      authMode === "signup"
+                        ? "border-gold text-gold font-medium"
+                        : "border-transparent text-grey-soft hover:text-cream"
+                    }`}
+                  >
+                    <UserPlus size={14} /> Sign Up
+                  </button>
+                </div>
+
+                {/* Error message */}
+                {authError && (
+                  <div className="mb-4 border border-red-800/60 bg-red-950/30 px-4 py-3 text-xs text-red-400">
+                    {authError}
+                  </div>
+                )}
+
+                {authMode === "signin" ? (
+                  <>
+                    <p className="text-xs leading-relaxed text-grey-soft mb-5">
+                      Enter your email and password to sign in.
+                    </p>
+                    <form onSubmit={handleSignIn} className="space-y-4">
+                      <div>
+                        <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-1">Email Address</label>
+                        <input
+                          type="email"
+                          required
+                          value={emailInput}
+                          onChange={(e) => setEmailInput(e.target.value)}
+                          placeholder="you@example.com"
+                          className="w-full border border-border bg-ink px-4 py-2.5 text-sm text-cream placeholder:text-grey/40 focus:border-gold focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-1">Password</label>
+                        <input
+                          type="password"
+                          required
+                          value={passwordInput}
+                          onChange={(e) => setPasswordInput(e.target.value)}
+                          placeholder="••••••••"
+                          className="w-full border border-border bg-ink px-4 py-2.5 text-sm text-cream placeholder:text-grey/40 focus:border-gold focus:outline-none"
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        className="w-full border border-gold bg-gold/10 py-3 text-xs uppercase tracking-[0.32em] text-gold transition-colors hover:bg-gold hover:text-black font-medium mt-2"
+                      >
+                        Sign In
+                      </button>
+                    </form>
+                    <p className="mt-5 text-center text-[11px] text-grey-soft">
+                      Don't have an account?{" "}
+                      <button
+                        onClick={() => switchAuthMode("signup")}
+                        className="text-gold hover:underline"
+                      >
+                        Create one →
+                      </button>
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-xs leading-relaxed text-grey-soft mb-5">
+                      Create an account to submit reviews and interact.
+                    </p>
+                    <form onSubmit={handleSignUp} className="space-y-4">
+                      <div>
+                        <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-1">Full Name</label>
+                        <input
+                          type="text"
+                          required
+                          value={nameInput}
+                          onChange={(e) => setNameInput(e.target.value)}
+                          placeholder="Your Name"
+                          className="w-full border border-border bg-ink px-4 py-2.5 text-sm text-cream placeholder:text-grey/40 focus:border-gold focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-1">Email Address</label>
+                        <input
+                          type="email"
+                          required
+                          value={emailInput}
+                          onChange={(e) => setEmailInput(e.target.value)}
+                          placeholder="you@example.com"
+                          className="w-full border border-border bg-ink px-4 py-2.5 text-sm text-cream placeholder:text-grey/40 focus:border-gold focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-1">Password</label>
+                        <input
+                          type="password"
+                          required
+                          minLength={6}
+                          value={passwordInput}
+                          onChange={(e) => setPasswordInput(e.target.value)}
+                          placeholder="Min. 6 characters"
+                          className="w-full border border-border bg-ink px-4 py-2.5 text-sm text-cream placeholder:text-grey/40 focus:border-gold focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-1">Confirm Password</label>
+                        <input
+                          type="password"
+                          required
+                          value={confirmPasswordInput}
+                          onChange={(e) => setConfirmPasswordInput(e.target.value)}
+                          placeholder="••••••••"
+                          className="w-full border border-border bg-ink px-4 py-2.5 text-sm text-cream placeholder:text-grey/40 focus:border-gold focus:outline-none"
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        className="w-full border border-gold bg-gold/10 py-3 text-xs uppercase tracking-[0.32em] text-gold transition-colors hover:bg-gold hover:text-black font-medium mt-2"
+                      >
+                        Create Account
+                      </button>
+                    </form>
+                    <p className="mt-5 text-center text-[11px] text-grey-soft">
+                      Already have an account?{" "}
+                      <button
+                        onClick={() => switchAuthMode("signin")}
+                        className="text-gold hover:underline"
+                      >
+                        Sign in →
+                      </button>
+                    </p>
+                  </>
+                )}
               </>
             )}
           </div>
@@ -285,6 +427,7 @@ function AdminPage() {
         <div className="mt-8 flex border-b border-border/60 space-x-2 overflow-x-auto">
           {[
             { id: "projects", label: "Projects & Images", count: Object.values(disciplines).reduce((acc, d) => acc + d.projects.length, 0) },
+            { id: "collage", label: "Selected Works Collage", count: customCollage && customCollage.length > 0 ? customCollage.length : getMixedTiles(disciplines).length },
             { id: "practices", label: "Practices", count: Object.keys(disciplines).length },
             { id: "enquiries", label: "Enquiries Inbox", count: enquiries.filter((e) => e.status === "new").length },
             { id: "reviews", label: "Review Approvals", count: reviews.filter((r) => r.status === "pending").length },
@@ -575,6 +718,160 @@ function AdminPage() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 1.5: COLLAGE MANAGER */}
+        {activeTab === "collage" && (
+          <div className="mt-10 grid grid-cols-1 gap-12 lg:grid-cols-12">
+            {/* Left: Collage Order */}
+            <div className="lg:col-span-8 space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="font-serif text-2xl text-cream">Selected Works Collage</h2>
+                  <p className="mt-1 text-xs text-grey-soft">Reorder or remove images shown in the homepage collage.</p>
+                </div>
+                {customCollage && customCollage.length > 0 && (
+                  <button
+                    onClick={() => {
+                      if (confirm("Reset collage to automatically interleave all project images?")) {
+                        setCustomCollage(null);
+                      }
+                    }}
+                    className="border border-red-500/40 bg-red-500/10 px-4 py-2 text-[10px] uppercase tracking-wider text-red-400 hover:bg-red-500/20"
+                  >
+                    Reset to Auto
+                  </button>
+                )}
+              </div>
+
+              <div className="space-y-3">
+                {currentCollage.map((tile, idx) => (
+                  <div key={tile.id || idx} className="flex items-center gap-4 border border-border/60 bg-ink p-3">
+                    <img src={tile.src} alt="" className="h-16 w-24 object-cover border" style={{ borderColor: tile.color }} />
+                    <div className="flex-1">
+                      <p className="text-sm font-serif text-cream">{tile.title}</p>
+                      <p className="text-[10px] uppercase tracking-widest text-gold mt-1">
+                        {disciplines[tile.discipline].label} · {tile.location}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        disabled={idx === 0}
+                        onClick={() => {
+                          const newCollage = [...currentCollage];
+                          [newCollage[idx - 1], newCollage[idx]] = [newCollage[idx], newCollage[idx - 1]];
+                          setCustomCollage(newCollage);
+                        }}
+                        className="px-2 text-xs text-grey-soft hover:text-cream disabled:opacity-30"
+                      >
+                        ▲
+                      </button>
+                      <button
+                        disabled={idx === currentCollage.length - 1}
+                        onClick={() => {
+                          const newCollage = [...currentCollage];
+                          [newCollage[idx + 1], newCollage[idx]] = [newCollage[idx], newCollage[idx + 1]];
+                          setCustomCollage(newCollage);
+                        }}
+                        className="px-2 text-xs text-grey-soft hover:text-cream disabled:opacity-30"
+                      >
+                        ▼
+                      </button>
+                      <button
+                        onClick={() => {
+                          const newCollage = currentCollage.filter((_, i) => i !== idx);
+                          setCustomCollage(newCollage);
+                        }}
+                        className="p-2 text-grey-soft hover:text-red-400 ml-2"
+                        title="Remove from Collage"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Add to Collage */}
+            <div className="lg:col-span-4">
+              <div className="border border-border/60 bg-ink-soft p-6 md:p-8 space-y-6 sticky top-8">
+                <h3 className="font-serif text-xl text-cream border-b border-border/60 pb-3">Add to Collage</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-1">Discipline</label>
+                    <div className="flex flex-wrap gap-2">
+                      {(Object.keys(disciplines) as Discipline[]).map((key) => (
+                        <button
+                          key={key}
+                          onClick={() => {
+                            setCollageDiscipline(key);
+                            setCollageProjectIdx(0); // reset project selection
+                          }}
+                          className={`border px-3 py-1.5 text-[10px] uppercase tracking-wider transition-colors ${
+                            collageDiscipline === key
+                              ? "border-gold bg-gold/10 text-gold"
+                              : "border-border/60 text-grey-soft hover:border-gold/50"
+                          }`}
+                        >
+                          {disciplines[key].label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-1">Project</label>
+                    <select
+                      value={collageProjectIdx}
+                      onChange={(e) => setCollageProjectIdx(Number(e.target.value))}
+                      className="w-full border border-border bg-ink p-2.5 text-xs text-cream focus:border-gold focus:outline-none"
+                    >
+                      {disciplines[collageDiscipline].projects.length === 0 && (
+                        <option value={0} disabled>No projects found</option>
+                      )}
+                      {disciplines[collageDiscipline].projects.map((p, i) => (
+                        <option key={i} value={i}>{p.title}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {disciplines[collageDiscipline].projects[collageProjectIdx] && (
+                    <div>
+                      <label className="block text-[10px] uppercase tracking-[0.28em] text-gold mb-1 mt-4">Select Image</label>
+                      <div className="grid grid-cols-2 gap-2 mt-2">
+                        {disciplines[collageDiscipline].projects[collageProjectIdx].images.map((src, i) => (
+                          <button
+                            key={i}
+                            onClick={() => {
+                              const proj = disciplines[collageDiscipline].projects[collageProjectIdx];
+                              const newTile = {
+                                id: `custom-${Date.now()}`,
+                                src,
+                                title: proj.title,
+                                discipline: collageDiscipline,
+                                color: disciplines[collageDiscipline].color,
+                                location: proj.location,
+                                year: proj.year,
+                              };
+                              setCustomCollage([...currentCollage, newTile]);
+                            }}
+                            className="group relative aspect-video overflow-hidden border border-border hover:border-gold"
+                          >
+                            <img src={src} className="h-full w-full object-cover transition-transform group-hover:scale-110" />
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                              <Plus className="text-gold" />
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         )}

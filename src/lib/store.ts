@@ -28,6 +28,24 @@ export type UserSession = {
   roleCompany?: string;
 };
 
+export type RegisteredUser = {
+  name: string;
+  email: string;
+  password: string;
+  isAdmin: boolean;
+  createdAt: string;
+};
+
+export type CollageTile = {
+  id: string; // Unique ID for keying
+  src: string;
+  title: string;
+  discipline: Discipline;
+  color: string;
+  location: string;
+  year: number;
+};
+
 export type DisciplinesData = typeof defaultDisciplines;
 
 const STORAGE_KEYS = {
@@ -36,7 +54,18 @@ const STORAGE_KEYS = {
   REVIEWS: "pap_reviews_v1",
   ADMIN_AUTH: "pap_admin_auth_v1",
   USER_AUTH: "pap_user_auth_v1",
+  REGISTERED_USERS: "pap_registered_users_v1",
+  COLLAGE: "pap_collage_v1",
 };
+
+// Seed admin accounts — these are always present
+const SEED_ADMIN_ACCOUNTS: RegisteredUser[] = [
+  { name: "Studio Admin", email: "studio.paperandpencil@gmail.com", password: "admin123", isAdmin: true, createdAt: new Date().toISOString() },
+  { name: "Admin", email: "admin@paperandpencil.com", password: "admin123", isAdmin: true, createdAt: new Date().toISOString() },
+  { name: "Shwetha", email: "shwetha@paperandpencil.com", password: "admin123", isAdmin: true, createdAt: new Date().toISOString() },
+  { name: "Sharath", email: "sharath@paperandpencil.com", password: "admin123", isAdmin: true, createdAt: new Date().toISOString() },
+  { name: "Ayaan", email: "ayaanwann@gmail.com", password: "123456789", isAdmin: true, createdAt: new Date().toISOString() },
+];
 
 const initialReviews: Review[] = [
   {
@@ -156,6 +185,10 @@ export function useAppStore() {
     getStored<UserSession | null>(STORAGE_KEYS.USER_AUTH, null)
   );
 
+  const [customCollage, setCustomCollageState] = useState<CollageTile[] | null>(() =>
+    getStored<CollageTile[] | null>(STORAGE_KEYS.COLLAGE, null)
+  );
+
   useEffect(() => {
     const handleUpdate = () => {
       setDisciplines(getStored<DisciplinesData>(STORAGE_KEYS.DISCIPLINES, defaultDisciplines));
@@ -163,6 +196,7 @@ export function useAppStore() {
       setReviews(getStored<Review[]>(STORAGE_KEYS.REVIEWS, initialReviews));
       setIsAdmin(getStored<boolean>(STORAGE_KEYS.ADMIN_AUTH, false));
       setUserSession(getStored<UserSession | null>(STORAGE_KEYS.USER_AUTH, null));
+      setCustomCollageState(getStored<CollageTile[] | null>(STORAGE_KEYS.COLLAGE, null));
     };
 
     window.addEventListener("pap_store_update", handleUpdate);
@@ -183,43 +217,95 @@ export function useAppStore() {
     [reviews]
   );
 
-  // Actions
-  const ADMIN_EMAILS = [
-    "studio.paperandpencil@gmail.com",
-    "admin@paperandpencil.com",
-    "admin",
-    "shwetha@paperandpencil.com",
-    "sharath@paperandpencil.com",
-    "ayaanwann@gmail.com",
-  ];
+  // ── Auth Actions ──
 
-  const loginWithEmailPassword = (email: string, password?: string, name?: string) => {
+  // Get all registered users (seed admins + user-registered accounts)
+  const getAllUsers = (): RegisteredUser[] => {
+    const stored = getStored<RegisteredUser[]>(STORAGE_KEYS.REGISTERED_USERS, []);
+    // Merge seed admins (don't duplicate by email)
+    const storedEmails = new Set(stored.map((u) => u.email));
+    const merged = [...SEED_ADMIN_ACCOUNTS.filter((a) => !storedEmails.has(a.email)), ...stored];
+    return merged;
+  };
+
+  const registerUser = (
+    email: string,
+    password: string,
+    name: string
+  ): { success: boolean; error?: string } => {
     const cleanEmail = email.trim().toLowerCase();
-    
-    // Check if the email matches admin credentials
-    const isAdminEmail = ADMIN_EMAILS.includes(cleanEmail) || cleanEmail.startsWith("admin");
-    const isCorrectPassword = !password || password === "admin123" || password === "admin" || password === "123456789";
+    const allUsers = getAllUsers();
 
-    if (isAdminEmail && isCorrectPassword) {
-      setStored(STORAGE_KEYS.ADMIN_AUTH, true);
-      const session: UserSession = {
-        name: name?.trim() || "Paper & Pencil Admin",
-        email: cleanEmail,
-        roleCompany: "Studio Administrator",
-      };
-      setStored(STORAGE_KEYS.USER_AUTH, session);
-      return { success: true, isAdmin: true };
-    } else {
-      // Normal user sign in
-      setStored(STORAGE_KEYS.ADMIN_AUTH, false);
-      const session: UserSession = {
-        name: name?.trim() || cleanEmail.split("@")[0],
-        email: cleanEmail,
-        roleCompany: "Client Reviewer",
-      };
-      setStored(STORAGE_KEYS.USER_AUTH, session);
-      return { success: true, isAdmin: false };
+    // Check if email already exists
+    if (allUsers.some((u) => u.email === cleanEmail)) {
+      return { success: false, error: "An account with this email already exists. Please sign in." };
     }
+
+    const newUser: RegisteredUser = {
+      name: name.trim(),
+      email: cleanEmail,
+      password,
+      isAdmin: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    const stored = getStored<RegisteredUser[]>(STORAGE_KEYS.REGISTERED_USERS, []);
+    setStored(STORAGE_KEYS.REGISTERED_USERS, [newUser, ...stored]);
+
+    // Auto sign in after registration
+    const session: UserSession = {
+      name: newUser.name,
+      email: cleanEmail,
+      roleCompany: "Client",
+    };
+    setStored(STORAGE_KEYS.ADMIN_AUTH, false);
+    setStored(STORAGE_KEYS.USER_AUTH, session);
+    return { success: true };
+  };
+
+  const signInUser = (
+    email: string,
+    password: string
+  ): { success: boolean; isAdmin: boolean; error?: string } => {
+    const cleanEmail = email.trim().toLowerCase();
+    const allUsers = getAllUsers();
+    const user = allUsers.find((u) => u.email === cleanEmail);
+
+    if (!user) {
+      return { success: false, isAdmin: false, error: "No account found with this email. Please sign up first." };
+    }
+
+    if (user.password !== password) {
+      return { success: false, isAdmin: false, error: "Incorrect password. Please try again." };
+    }
+
+    // Successful login
+    const session: UserSession = {
+      name: user.name,
+      email: cleanEmail,
+      roleCompany: user.isAdmin ? "Studio Administrator" : "Client",
+    };
+    setStored(STORAGE_KEYS.ADMIN_AUTH, user.isAdmin);
+    setStored(STORAGE_KEYS.USER_AUTH, session);
+    return { success: true, isAdmin: user.isAdmin };
+  };
+
+  // Legacy compat — kept for any code that still calls it
+  const loginWithEmailPassword = (email: string, password?: string, name?: string) => {
+    if (password) {
+      const result = signInUser(email, password);
+      if (result.success) return { success: true, isAdmin: result.isAdmin };
+    }
+    // Fallback for no-password logins
+    const cleanEmail = email.trim().toLowerCase();
+    setStored(STORAGE_KEYS.ADMIN_AUTH, false);
+    const session: UserSession = {
+      name: name?.trim() || cleanEmail.split("@")[0],
+      email: cleanEmail,
+      roleCompany: "Client",
+    };
+    setStored(STORAGE_KEYS.USER_AUTH, session);
+    return { success: true, isAdmin: false };
   };
 
   const loginAdmin = (password: string): boolean => {
@@ -343,6 +429,10 @@ export function useAppStore() {
     setStored(STORAGE_KEYS.DISCIPLINES, updated);
   };
 
+  const setCustomCollage = (tiles: CollageTile[] | null) => {
+    setStored(STORAGE_KEYS.COLLAGE, tiles);
+  };
+
   const resetToDefaults = () => {
     setStored(STORAGE_KEYS.DISCIPLINES, defaultDisciplines);
     setStored(STORAGE_KEYS.REVIEWS, initialReviews);
@@ -357,6 +447,8 @@ export function useAppStore() {
     pendingReviews,
     isAdmin,
     userSession,
+    registerUser,
+    signInUser,
     loginWithEmailPassword,
     loginAdmin,
     logoutAdmin,
@@ -372,6 +464,8 @@ export function useAppStore() {
     addProject,
     updateProject,
     deleteProject,
+    customCollage,
+    setCustomCollage,
     resetToDefaults,
   };
 }

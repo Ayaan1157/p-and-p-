@@ -1,19 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { slugify, type Discipline } from "@/data/work";
-import { useAppStore, type DisciplinesData } from "@/lib/store";
-
-type Tile = {
-  src: string;
-  title: string;
-  discipline: Discipline;
-  color: string;
-  location: string;
-  year: number;
-};
+import { useAppStore, type DisciplinesData, type CollageTile } from "@/lib/store";
 
 // Interleave project images from each discipline to get a perfect mix of categories
-const getMixedTiles = (disciplines: DisciplinesData): Tile[] => {
-  const list: Record<Discipline, Tile[]> = {
+export const getMixedTiles = (disciplines: DisciplinesData): CollageTile[] => {
+  const list: Record<Discipline, CollageTile[]> = {
     institutional: [],
     industrial: [],
     commercial: [],
@@ -22,8 +13,9 @@ const getMixedTiles = (disciplines: DisciplinesData): Tile[] => {
 
   (Object.entries(disciplines) as [Discipline, typeof disciplines[Discipline]][]).forEach(([key, d]) => {
     d.projects.forEach((p) => {
-      p.images.forEach((src) => {
+      p.images.forEach((src, idx) => {
         list[key].push({
+          id: `auto-${key}-${p.title}-${idx}`,
           src,
           title: p.title,
           discipline: key,
@@ -35,7 +27,7 @@ const getMixedTiles = (disciplines: DisciplinesData): Tile[] => {
     });
   });
 
-  const mixed: Tile[] = [];
+  const mixed: CollageTile[] = [];
   const keys: Discipline[] = ["institutional", "industrial", "commercial", "residential"];
   let hasMore = true;
   let index = 0;
@@ -76,8 +68,8 @@ const layoutSpans = [
 ];
 
 export function Projects() {
-  const { disciplines } = useAppStore();
-  const tiles = getMixedTiles(disciplines);
+  const { disciplines, customCollage } = useAppStore();
+  const tiles = customCollage && customCollage.length > 0 ? customCollage : getMixedTiles(disciplines);
   return (
     <section id="projects" className="relative overflow-hidden py-32 md:py-44">
       <span className="ghost-numeral absolute right-2 top-12 text-[18vw] md:right-8">03</span>
@@ -100,7 +92,7 @@ export function Projects() {
             const span = layoutSpans[i % layoutSpans.length];
             return (
               <Link
-                key={`${t.src}-${i}`}
+                key={t.id || `${t.src}-${i}`}
                 to="/work/$discipline"
                 params={{ discipline: t.discipline }}
                 hash={slugify(t.title)}

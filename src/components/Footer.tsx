@@ -31,7 +31,7 @@ export function Footer() {
       </div>
       <div className="mx-auto mt-20 flex max-w-[1600px] flex-col items-start justify-between gap-4 border-t px-6 pt-8 text-[10px] uppercase tracking-[0.3em] md:flex-row md:items-center md:px-12" style={{ borderColor: "var(--border)", color: "var(--grey)" }}>
         <p>© {new Date().getFullYear()} Paper And Pencil. All rights reserved.</p>
-        <p>Drawn with patience · Bengaluru</p>
+        <p>Designed with patience · Bengaluru</p>
       </div>
     </footer>
   );
