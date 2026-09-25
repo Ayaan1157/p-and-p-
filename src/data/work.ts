@@ -63,7 +63,16 @@ export const disciplines: Record<
         year: 2025,
         size: "10,500 sqm",
         note: "Shop floor + gantry on terrain site",
-        images: ["/portfolio/p8.jpg", "/portfolio/p8_gable.jpg", "/portfolio/p10.jpg", "/portfolio/p11.jpg"],
+        images: [
+          "/portfolio/p45.jpg",
+          "/portfolio/p48.jpg",
+          "/portfolio/p46.jpg",
+          "/portfolio/p47.jpg",
+          "/portfolio/p49.jpg",
+          "/portfolio/p8.jpg",
+          "/portfolio/p10.jpg",
+          "/portfolio/p11.jpg",
+        ],
       },
       {
         title: "Veeregowda Factory",
