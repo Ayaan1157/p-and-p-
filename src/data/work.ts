@@ -55,7 +55,7 @@ export const disciplines: Record<
         year: 2025,
         size: "2,000 sqm",
         note: "Shop floor at multiple levels with continuous gantry",
-        images: ["/portfolio/p7.jpg"],
+        images: ["/portfolio/p7.jpg", "/portfolio/p9.jpg"],
       },
       {
         title: "SAAB Unit 5",
@@ -70,7 +70,7 @@ export const disciplines: Record<
         location: "Bengaluru",
         year: 2024,
         size: "2,000 sqm",
-        images: ["/portfolio/p12.jpg", "/portfolio/p13.jpg"],
+        images: ["/portfolio/p13.jpg", "/portfolio/p13_night.jpg", "/portfolio/p12.jpg"],
       },
       {
         title: "Glastronix",
