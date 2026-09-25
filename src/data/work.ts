@@ -55,7 +55,7 @@ export const disciplines: Record<
         year: 2025,
         size: "2,000 sqm",
         note: "Shop floor at multiple levels with continuous gantry",
-        images: ["/portfolio/p7.jpg", "/portfolio/p9.jpg"],
+        images: ["/portfolio/p9.jpg", "/portfolio/p7.jpg"],
       },
       {
         title: "SAAB Unit 5",
@@ -63,7 +63,7 @@ export const disciplines: Record<
         year: 2025,
         size: "10,500 sqm",
         note: "Shop floor + gantry on terrain site",
-        images: ["/portfolio/p8.jpg", "/portfolio/p10.jpg", "/portfolio/p11.jpg"],
+        images: ["/portfolio/p8.jpg", "/portfolio/p8_gable.jpg", "/portfolio/p10.jpg", "/portfolio/p11.jpg"],
       },
       {
         title: "Veeregowda Factory",
