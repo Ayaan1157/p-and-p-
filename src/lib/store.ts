@@ -49,13 +49,13 @@ export type CollageTile = {
 export type DisciplinesData = typeof defaultDisciplines;
 
 const STORAGE_KEYS = {
-  DISCIPLINES: "pap_disciplines_v1",
+  DISCIPLINES: "pap_disciplines_v2",
   ENQUIRIES: "pap_enquiries_v1",
   REVIEWS: "pap_reviews_v1",
   ADMIN_AUTH: "pap_admin_auth_v1",
   USER_AUTH: "pap_user_auth_v1",
   REGISTERED_USERS: "pap_registered_users_v1",
-  COLLAGE: "pap_collage_v1",
+  COLLAGE: "pap_collage_v2",
 };
 
 // Seed admin accounts — these are always present

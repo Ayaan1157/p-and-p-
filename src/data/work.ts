@@ -86,7 +86,7 @@ export const disciplines: Record<
         year: 2019,
         size: "1,000 sqm",
         note: "Aluminium profile sheet manufacturer",
-        images: ["/portfolio/p17.jpg", "/portfolio/p18.jpg"],
+        images: ["/portfolio/p17.jpg", "/portfolio/p19.jpg", "/portfolio/p18.jpg"],
       },
       {
         title: "Powerica",
