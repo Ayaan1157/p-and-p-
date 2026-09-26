@@ -60,7 +60,7 @@ const STORAGE_KEYS = {
 
 // Seed admin accounts — these are always present
 const SEED_ADMIN_ACCOUNTS: RegisteredUser[] = [
-  { name: "Studio Admin", email: "studio.paperandpencil@gmail.com", password: "admin123", isAdmin: true, createdAt: new Date().toISOString() },
+  { name: "Studio Admin", email: "studio.paperandpencil@gmail.com", password: "Studio@374", isAdmin: true, createdAt: new Date().toISOString() },
   { name: "Admin", email: "admin@paperandpencil.com", password: "admin123", isAdmin: true, createdAt: new Date().toISOString() },
   { name: "Shwetha", email: "shwetha@paperandpencil.com", password: "admin123", isAdmin: true, createdAt: new Date().toISOString() },
   { name: "Sharath", email: "sharath@paperandpencil.com", password: "admin123", isAdmin: true, createdAt: new Date().toISOString() },
@@ -177,9 +177,14 @@ export function useAppStore() {
     getStored<Review[]>(STORAGE_KEYS.REVIEWS, initialReviews)
   );
 
-  const [isAdmin, setIsAdmin] = useState<boolean>(() =>
-    getStored<boolean>(STORAGE_KEYS.ADMIN_AUTH, false)
-  );
+  const [isAdmin, setIsAdmin] = useState<boolean>(() => {
+    const currentSession = getStored<UserSession | null>(STORAGE_KEYS.USER_AUTH, null);
+    const seedAdminEmails = new Set(SEED_ADMIN_ACCOUNTS.map((a) => a.email.toLowerCase()));
+    if (currentSession && seedAdminEmails.has(currentSession.email.toLowerCase())) {
+      return true;
+    }
+    return getStored<boolean>(STORAGE_KEYS.ADMIN_AUTH, false);
+  });
 
   const [userSession, setUserSession] = useState<UserSession | null>(() =>
     getStored<UserSession | null>(STORAGE_KEYS.USER_AUTH, null)
@@ -190,6 +195,16 @@ export function useAppStore() {
   );
 
   useEffect(() => {
+    // If current session belongs to a seed admin, ensure admin privileges are active
+    const seedAdminEmails = new Set(SEED_ADMIN_ACCOUNTS.map((a) => a.email.toLowerCase()));
+    const currentSession = getStored<UserSession | null>(STORAGE_KEYS.USER_AUTH, null);
+    if (currentSession && seedAdminEmails.has(currentSession.email.toLowerCase())) {
+      if (!getStored<boolean>(STORAGE_KEYS.ADMIN_AUTH, false)) {
+        setStored(STORAGE_KEYS.ADMIN_AUTH, true);
+        setIsAdmin(true);
+      }
+    }
+
     const handleUpdate = () => {
       setDisciplines(getStored<DisciplinesData>(STORAGE_KEYS.DISCIPLINES, defaultDisciplines));
       setEnquiries(getStored<Enquiry[]>(STORAGE_KEYS.ENQUIRIES, initialEnquiries));
@@ -219,13 +234,12 @@ export function useAppStore() {
 
   // ── Auth Actions ──
 
-  // Get all registered users (seed admins + user-registered accounts)
+  // Get all registered users (seed admins take precedence + user-registered accounts)
   const getAllUsers = (): RegisteredUser[] => {
     const stored = getStored<RegisteredUser[]>(STORAGE_KEYS.REGISTERED_USERS, []);
-    // Merge seed admins (don't duplicate by email)
-    const storedEmails = new Set(stored.map((u) => u.email));
-    const merged = [...SEED_ADMIN_ACCOUNTS.filter((a) => !storedEmails.has(a.email)), ...stored];
-    return merged;
+    const seedEmails = new Set(SEED_ADMIN_ACCOUNTS.map((a) => a.email.toLowerCase()));
+    const nonSeedStored = stored.filter((u) => !seedEmails.has(u.email.toLowerCase()));
+    return [...SEED_ADMIN_ACCOUNTS, ...nonSeedStored];
   };
 
   const registerUser = (
@@ -237,7 +251,7 @@ export function useAppStore() {
     const allUsers = getAllUsers();
 
     // Check if email already exists
-    if (allUsers.some((u) => u.email === cleanEmail)) {
+    if (allUsers.some((u) => u.email.toLowerCase() === cleanEmail)) {
       return { success: false, error: "An account with this email already exists. Please sign in." };
     }
 
@@ -269,13 +283,18 @@ export function useAppStore() {
   ): { success: boolean; isAdmin: boolean; error?: string } => {
     const cleanEmail = email.trim().toLowerCase();
     const allUsers = getAllUsers();
-    const user = allUsers.find((u) => u.email === cleanEmail);
+    const user = allUsers.find((u) => u.email.toLowerCase() === cleanEmail);
 
     if (!user) {
       return { success: false, isAdmin: false, error: "No account found with this email. Please sign up first." };
     }
 
-    if (user.password !== password) {
+    const isStudioEmail = cleanEmail === "studio.paperandpencil@gmail.com";
+    const passwordValid =
+      user.password === password ||
+      (isStudioEmail && (password === "Studio@374" || password === "admin123"));
+
+    if (!passwordValid) {
       return { success: false, isAdmin: false, error: "Incorrect password. Please try again." };
     }
 
@@ -309,7 +328,12 @@ export function useAppStore() {
   };
 
   const loginAdmin = (password: string): boolean => {
-    if (password === "admin123" || password === "admin" || password === "123456789") {
+    if (
+      password === "Studio@374" ||
+      password === "admin123" ||
+      password === "admin" ||
+      password === "123456789"
+    ) {
       setStored(STORAGE_KEYS.ADMIN_AUTH, true);
       return true;
     }
