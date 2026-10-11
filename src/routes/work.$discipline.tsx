@@ -160,7 +160,13 @@ function WorkPage() {
                   <span className="font-sans text-sm md:text-base font-light shrink-0" style={{ color: d.color }}>
                     {String(pIdx + 1).padStart(2, "0")}
                   </span>
-                  <div className="space-y-3">
+                  <div className="space-y-2">
+                    <span
+                      className="inline-block w-fit px-2 py-0.5 text-[9px] uppercase tracking-[0.3em] font-medium"
+                      style={{ background: d.color, color: "var(--cream)" }}
+                    >
+                      {d.label}
+                    </span>
                     <h2 className="font-sans text-lg md:text-2xl font-light uppercase tracking-[0.18em]">{p.title}</h2>
                     {p.note && (
                       <p className="text-sm font-light leading-relaxed" style={{ color: "var(--grey-soft)" }}>
@@ -239,9 +245,15 @@ function WorkPage() {
           {/* Header */}
           <div className="flex w-full max-w-[1600px] items-center justify-between text-cream z-10" onClick={(e) => e.stopPropagation()}>
             <div className="space-y-1">
-              <p className="text-xs uppercase tracking-[0.3em] text-gold">{lightbox.title}</p>
+              <span
+                className="mb-1 inline-block w-fit px-2 py-0.5 text-[9px] uppercase tracking-[0.3em] font-medium"
+                style={{ background: d.color, color: "var(--cream)" }}
+              >
+                {d.label}
+              </span>
+              <p className="font-serif text-lg md:text-xl text-white">{lightbox.title}</p>
               <p className="text-[10px] uppercase tracking-[0.25em] text-grey-soft">
-                View {lightbox.imageIndex + 1} of {d.projects[lightbox.projectIndex].images.length}
+                {d.projects[lightbox.projectIndex].location} · {d.projects[lightbox.projectIndex].year} · View {lightbox.imageIndex + 1} of {d.projects[lightbox.projectIndex].images.length}
               </p>
             </div>
             <button

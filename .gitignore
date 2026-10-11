@@ -33,5 +33,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
 .vercel
+.backup_original_slides/

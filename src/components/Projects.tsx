@@ -112,25 +112,6 @@ export function Projects() {
                   className="block h-full w-full object-cover transition-transform duration-[1200ms] ease-[var(--ease-luxury)] group-hover:scale-105"
                   style={{ borderBottom: `3px solid ${t.color}` }}
                 />
-
-                <div
-                  className="pointer-events-none absolute inset-0 flex flex-col justify-end p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                  style={{
-                    background:
-                      "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 45%, rgba(0,0,0,0) 100%)",
-                  }}
-                >
-                  <span
-                    className="mb-2 inline-block w-fit px-2 py-1 text-[9px] uppercase tracking-[0.3em]"
-                    style={{ background: t.color, color: "var(--cream)" }}
-                  >
-                    {disciplines[t.discipline].label}
-                  </span>
-                  <h3 className="font-serif text-lg leading-tight text-white">{t.title}</h3>
-                  <p className="mt-1 text-[10px] uppercase tracking-[0.28em] text-white/70">
-                    {t.location} · {t.year}
-                  </p>
-                </div>
               </Link>
             );
           })}
