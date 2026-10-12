@@ -35,3 +35,4 @@ dist-ssr
 *.sw?
 .vercel
 .backup_original_slides/
+.env*
