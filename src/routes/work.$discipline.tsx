@@ -55,9 +55,9 @@ export const Route = createFileRoute("/work/$discipline")({
       <p className="font-serif text-2xl">Discipline not found.</p>
     </main>
   ),
-  errorComponent: ({ error }) => (
+  errorComponent: ({ error }: { error: any }) => (
     <main className="min-h-screen flex items-center justify-center">
-      <p className="font-serif text-2xl">{error.message}</p>
+      <p className="font-serif text-2xl">{error?.message || "An error occurred."}</p>
     </main>
   ),
 });

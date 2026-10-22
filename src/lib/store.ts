@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { disciplines as defaultDisciplines, type Discipline, type Project } from "@/data/work";
+import { getIdb, setIdb, clearIdb } from "./idb";
 
 export type Enquiry = {
   id: string;
@@ -48,8 +49,8 @@ export type CollageTile = {
 
 export type DisciplinesData = typeof defaultDisciplines;
 
-const STORAGE_KEYS = {
-  DISCIPLINES: "pap_disciplines_v6",
+export const STORAGE_KEYS = {
+  DISCIPLINES: "pap_disciplines_v7",
   ENQUIRIES: "pap_enquiries_v1",
   REVIEWS: "pap_reviews_v1",
   ADMIN_AUTH: "pap_admin_auth_v1",
@@ -59,7 +60,7 @@ const STORAGE_KEYS = {
 };
 
 // Seed admin accounts — these are always present
-const SEED_ADMIN_ACCOUNTS: RegisteredUser[] = [
+export const SEED_ADMIN_ACCOUNTS: RegisteredUser[] = [
   { name: "Studio Admin", email: "studio.paperandpencil@gmail.com", password: "Studio@374", isAdmin: true, createdAt: new Date().toISOString() },
   { name: "Admin", email: "admin@paperandpencil.com", password: "admin123", isAdmin: true, createdAt: new Date().toISOString() },
   { name: "Shwetha", email: "shwetha@paperandpencil.com", password: "admin123", isAdmin: true, createdAt: new Date().toISOString() },
@@ -140,27 +141,44 @@ const initialEnquiries: Enquiry[] = [
   },
 ];
 
-// Helper to safely load JSON from localStorage
+// Cross-tab broadcast channel for instant multi-window synchronization
+const syncChannel =
+  typeof window !== "undefined" && "BroadcastChannel" in window
+    ? new BroadcastChannel("pap_store_sync_channel")
+    : null;
+
+// Helper to safely load JSON synchronously from localStorage
 function getStored<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
   try {
     const item = localStorage.getItem(key);
     return item ? JSON.parse(item) : fallback;
-  } catch (err) {
-    console.error(`Error reading ${key} from localStorage:`, err);
+  } catch {
     return fallback;
   }
 }
 
-// Helper to safely save JSON to localStorage
-function setStored<T>(key: string, value: T): void {
+// Dual persistence: IndexedDB (authoritative, limitless) + localStorage (fast mirror)
+async function setStored<T>(key: string, value: T): Promise<void> {
   if (typeof window === "undefined") return;
+
+  // 1. Persist to IndexedDB (supports multi-megabyte renders with no 5MB quota limit)
+  await setIdb(key, value);
+
+  // 2. Best-effort mirror to localStorage
   try {
     localStorage.setItem(key, JSON.stringify(value));
-    window.dispatchEvent(new Event("pap_store_update"));
-  } catch (err) {
-    console.error(`Error saving ${key} to localStorage:`, err);
+  } catch {
+    // If localStorage quota is exceeded due to large base64 images, IndexedDB handles it safely
   }
+
+  // 3. Dispatch local event for same-tab instant reactivity
+  window.dispatchEvent(new CustomEvent("pap_store_update", { detail: { key } }));
+
+  // 4. Broadcast across tabs so all open windows update in real-time
+  try {
+    syncChannel?.postMessage({ key });
+  } catch {}
 }
 
 // React Hook to subscribe to app store state changes
@@ -194,8 +212,11 @@ export function useAppStore() {
     getStored<CollageTile[] | null>(STORAGE_KEYS.COLLAGE, null)
   );
 
+  // Hydrate from IndexedDB on component mount and subscribe to updates
   useEffect(() => {
-    // If current session belongs to a seed admin, ensure admin privileges are active
+    let isMounted = true;
+
+    // Check if session is admin
     const seedAdminEmails = new Set(SEED_ADMIN_ACCOUNTS.map((a) => a.email.toLowerCase()));
     const currentSession = getStored<UserSession | null>(STORAGE_KEYS.USER_AUTH, null);
     if (currentSession && seedAdminEmails.has(currentSession.email.toLowerCase())) {
@@ -205,20 +226,74 @@ export function useAppStore() {
       }
     }
 
-    const handleUpdate = () => {
-      setDisciplines(getStored<DisciplinesData>(STORAGE_KEYS.DISCIPLINES, defaultDisciplines));
-      setEnquiries(getStored<Enquiry[]>(STORAGE_KEYS.ENQUIRIES, initialEnquiries));
-      setReviews(getStored<Review[]>(STORAGE_KEYS.REVIEWS, initialReviews));
+    // Hydrate authoritative data from IndexedDB
+    async function hydrateAuthoritative() {
+      try {
+        const [idbDisciplines, idbCollage, idbEnquiries, idbReviews] = await Promise.all([
+          getIdb<DisciplinesData>(STORAGE_KEYS.DISCIPLINES),
+          getIdb<CollageTile[] | null>(STORAGE_KEYS.COLLAGE),
+          getIdb<Enquiry[]>(STORAGE_KEYS.ENQUIRIES),
+          getIdb<Review[]>(STORAGE_KEYS.REVIEWS),
+        ]);
+
+        if (!isMounted) return;
+
+        if (idbDisciplines) {
+          setDisciplines(idbDisciplines);
+        }
+        if (idbCollage !== null && idbCollage !== undefined) {
+          setCustomCollageState(idbCollage);
+        }
+        if (idbEnquiries) {
+          setEnquiries(idbEnquiries);
+        }
+        if (idbReviews) {
+          setReviews(idbReviews);
+        }
+      } catch (err) {
+        console.warn("[Store] Initial hydration from IndexedDB failed:", err);
+      }
+    }
+
+    hydrateAuthoritative();
+
+    const handleUpdate = async () => {
+      // Refresh state from IndexedDB first, then fallback to localStorage
+      const idbDisc = await getIdb<DisciplinesData>(STORAGE_KEYS.DISCIPLINES);
+      if (!isMounted) return;
+      setDisciplines(idbDisc || getStored<DisciplinesData>(STORAGE_KEYS.DISCIPLINES, defaultDisciplines));
+
+      const idbCol = await getIdb<CollageTile[] | null>(STORAGE_KEYS.COLLAGE);
+      if (!isMounted) return;
+      setCustomCollageState(
+        idbCol !== null && idbCol !== undefined ? idbCol : getStored<CollageTile[] | null>(STORAGE_KEYS.COLLAGE, null)
+      );
+
+      const idbEnq = await getIdb<Enquiry[]>(STORAGE_KEYS.ENQUIRIES);
+      if (!isMounted) return;
+      setEnquiries(idbEnq || getStored<Enquiry[]>(STORAGE_KEYS.ENQUIRIES, initialEnquiries));
+
+      const idbRev = await getIdb<Review[]>(STORAGE_KEYS.REVIEWS);
+      if (!isMounted) return;
+      setReviews(idbRev || getStored<Review[]>(STORAGE_KEYS.REVIEWS, initialReviews));
+
       setIsAdmin(getStored<boolean>(STORAGE_KEYS.ADMIN_AUTH, false));
       setUserSession(getStored<UserSession | null>(STORAGE_KEYS.USER_AUTH, null));
-      setCustomCollageState(getStored<CollageTile[] | null>(STORAGE_KEYS.COLLAGE, null));
     };
 
     window.addEventListener("pap_store_update", handleUpdate);
     window.addEventListener("storage", handleUpdate);
+
+    const handleSyncMessage = () => {
+      handleUpdate();
+    };
+    syncChannel?.addEventListener("message", handleSyncMessage);
+
     return () => {
+      isMounted = false;
       window.removeEventListener("pap_store_update", handleUpdate);
       window.removeEventListener("storage", handleUpdate);
+      syncChannel?.removeEventListener("message", handleSyncMessage);
     };
   }, []);
 
@@ -234,7 +309,6 @@ export function useAppStore() {
 
   // ── Auth Actions ──
 
-  // Get all registered users (seed admins take precedence + user-registered accounts)
   const getAllUsers = (): RegisteredUser[] => {
     const stored = getStored<RegisteredUser[]>(STORAGE_KEYS.REGISTERED_USERS, []);
     const seedEmails = new Set(SEED_ADMIN_ACCOUNTS.map((a) => a.email.toLowerCase()));
@@ -250,7 +324,6 @@ export function useAppStore() {
     const cleanEmail = email.trim().toLowerCase();
     const allUsers = getAllUsers();
 
-    // Check if email already exists
     if (allUsers.some((u) => u.email.toLowerCase() === cleanEmail)) {
       return { success: false, error: "An account with this email already exists. Please sign in." };
     }
@@ -266,7 +339,6 @@ export function useAppStore() {
     const stored = getStored<RegisteredUser[]>(STORAGE_KEYS.REGISTERED_USERS, []);
     setStored(STORAGE_KEYS.REGISTERED_USERS, [newUser, ...stored]);
 
-    // Auto sign in after registration
     const session: UserSession = {
       name: newUser.name,
       email: cleanEmail,
@@ -298,7 +370,6 @@ export function useAppStore() {
       return { success: false, isAdmin: false, error: "Incorrect password. Please try again." };
     }
 
-    // Successful login
     const session: UserSession = {
       name: user.name,
       email: cleanEmail,
@@ -309,13 +380,11 @@ export function useAppStore() {
     return { success: true, isAdmin: user.isAdmin };
   };
 
-  // Legacy compat — kept for any code that still calls it
   const loginWithEmailPassword = (email: string, password?: string, name?: string) => {
     if (password) {
       const result = signInUser(email, password);
       if (result.success) return { success: true, isAdmin: result.isAdmin };
     }
-    // Fallback for no-password logins
     const cleanEmail = email.trim().toLowerCase();
     setStored(STORAGE_KEYS.ADMIN_AUTH, false);
     const session: UserSession = {
@@ -354,48 +423,52 @@ export function useAppStore() {
   };
 
   const addEnquiry = (enquiry: Omit<Enquiry, "id" | "createdAt" | "status">) => {
-    const current = getStored<Enquiry[]>(STORAGE_KEYS.ENQUIRIES, initialEnquiries);
+    const current = enquiries;
     const newEnq: Enquiry = {
       ...enquiry,
       id: `enq-${Date.now()}`,
       createdAt: new Date().toISOString(),
       status: "new",
     };
-    setStored(STORAGE_KEYS.ENQUIRIES, [newEnq, ...current]);
+    const updated = [newEnq, ...current];
+    setEnquiries(updated);
+    setStored(STORAGE_KEYS.ENQUIRIES, updated);
   };
 
   const updateEnquiryStatus = (id: string, status: Enquiry["status"]) => {
-    const current = getStored<Enquiry[]>(STORAGE_KEYS.ENQUIRIES, initialEnquiries);
-    const updated = current.map((e) => (e.id === id ? { ...e, status } : e));
+    const updated = enquiries.map((e) => (e.id === id ? { ...e, status } : e));
+    setEnquiries(updated);
     setStored(STORAGE_KEYS.ENQUIRIES, updated);
   };
 
   const deleteEnquiry = (id: string) => {
-    const current = getStored<Enquiry[]>(STORAGE_KEYS.ENQUIRIES, initialEnquiries);
-    const updated = current.filter((e) => e.id !== id);
+    const updated = enquiries.filter((e) => e.id !== id);
+    setEnquiries(updated);
     setStored(STORAGE_KEYS.ENQUIRIES, updated);
   };
 
   const addReview = (review: Omit<Review, "id" | "createdAt" | "status">) => {
-    const current = getStored<Review[]>(STORAGE_KEYS.REVIEWS, initialReviews);
+    const current = reviews;
     const newRev: Review = {
       ...review,
       id: `rev-${Date.now()}`,
       createdAt: new Date().toISOString(),
-      status: "pending", // Starts in pending moderation state
+      status: "pending",
     };
-    setStored(STORAGE_KEYS.REVIEWS, [newRev, ...current]);
+    const updated = [newRev, ...current];
+    setReviews(updated);
+    setStored(STORAGE_KEYS.REVIEWS, updated);
   };
 
   const updateReviewStatus = (id: string, status: Review["status"]) => {
-    const current = getStored<Review[]>(STORAGE_KEYS.REVIEWS, initialReviews);
-    const updated = current.map((r) => (r.id === id ? { ...r, status } : r));
+    const updated = reviews.map((r) => (r.id === id ? { ...r, status } : r));
+    setReviews(updated);
     setStored(STORAGE_KEYS.REVIEWS, updated);
   };
 
   const deleteReview = (id: string) => {
-    const current = getStored<Review[]>(STORAGE_KEYS.REVIEWS, initialReviews);
-    const updated = current.filter((r) => r.id !== id);
+    const updated = reviews.filter((r) => r.id !== id);
+    setReviews(updated);
     setStored(STORAGE_KEYS.REVIEWS, updated);
   };
 
@@ -403,64 +476,105 @@ export function useAppStore() {
     key: Discipline,
     data: { label?: string; tagline?: string; code?: string; color?: string }
   ) => {
-    const current = getStored<DisciplinesData>(STORAGE_KEYS.DISCIPLINES, defaultDisciplines);
     const updated = {
-      ...current,
+      ...disciplines,
       [key]: {
-        ...current[key],
+        ...disciplines[key],
         ...data,
       },
     };
+    setDisciplines(updated);
     setStored(STORAGE_KEYS.DISCIPLINES, updated);
   };
 
   const addProject = (disciplineKey: Discipline, project: Project) => {
-    const current = getStored<DisciplinesData>(STORAGE_KEYS.DISCIPLINES, defaultDisciplines);
     const updated = {
-      ...current,
+      ...disciplines,
       [disciplineKey]: {
-        ...current[disciplineKey],
-        projects: [project, ...current[disciplineKey].projects],
+        ...disciplines[disciplineKey],
+        projects: [project, ...disciplines[disciplineKey].projects],
       },
     };
+    setDisciplines(updated);
     setStored(STORAGE_KEYS.DISCIPLINES, updated);
   };
 
   const updateProject = (disciplineKey: Discipline, index: number, project: Project) => {
-    const current = getStored<DisciplinesData>(STORAGE_KEYS.DISCIPLINES, defaultDisciplines);
-    const projects = [...current[disciplineKey].projects];
+    const projects = [...disciplines[disciplineKey].projects];
     projects[index] = project;
     const updated = {
-      ...current,
+      ...disciplines,
       [disciplineKey]: {
-        ...current[disciplineKey],
+        ...disciplines[disciplineKey],
         projects,
       },
     };
+    setDisciplines(updated);
     setStored(STORAGE_KEYS.DISCIPLINES, updated);
   };
 
   const deleteProject = (disciplineKey: Discipline, index: number) => {
-    const current = getStored<DisciplinesData>(STORAGE_KEYS.DISCIPLINES, defaultDisciplines);
-    const projects = current[disciplineKey].projects.filter((_, i) => i !== index);
+    const projects = disciplines[disciplineKey].projects.filter((_, i) => i !== index);
     const updated = {
-      ...current,
+      ...disciplines,
       [disciplineKey]: {
-        ...current[disciplineKey],
+        ...disciplines[disciplineKey],
         projects,
       },
     };
+    setDisciplines(updated);
     setStored(STORAGE_KEYS.DISCIPLINES, updated);
   };
 
   const setCustomCollage = (tiles: CollageTile[] | null) => {
+    setCustomCollageState(tiles);
     setStored(STORAGE_KEYS.COLLAGE, tiles);
   };
 
-  const resetToDefaults = () => {
-    setStored(STORAGE_KEYS.DISCIPLINES, defaultDisciplines);
-    setStored(STORAGE_KEYS.REVIEWS, initialReviews);
-    setStored(STORAGE_KEYS.ENQUIRIES, initialEnquiries);
+  const resetToDefaults = async () => {
+    setDisciplines(defaultDisciplines);
+    setReviews(initialReviews);
+    setEnquiries(initialEnquiries);
+    setCustomCollageState(null);
+    await clearIdb();
+    try {
+      localStorage.removeItem(STORAGE_KEYS.DISCIPLINES);
+      localStorage.removeItem(STORAGE_KEYS.COLLAGE);
+      localStorage.removeItem(STORAGE_KEYS.REVIEWS);
+      localStorage.removeItem(STORAGE_KEYS.ENQUIRIES);
+    } catch {}
+    window.dispatchEvent(new CustomEvent("pap_store_update"));
+    syncChannel?.postMessage({ action: "reset" });
+  };
+
+  const exportPortfolioData = (): string => {
+    const backup = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      disciplines,
+      customCollage,
+    };
+    return JSON.stringify(backup, null, 2);
+  };
+
+  const importPortfolioData = async (jsonString: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const parsed = JSON.parse(jsonString);
+      if (!parsed || typeof parsed !== "object") {
+        return { success: false, error: "Invalid backup file format." };
+      }
+      if (parsed.disciplines) {
+        setDisciplines(parsed.disciplines);
+        await setStored(STORAGE_KEYS.DISCIPLINES, parsed.disciplines);
+      }
+      if (parsed.customCollage !== undefined) {
+        setCustomCollageState(parsed.customCollage);
+        await setStored(STORAGE_KEYS.COLLAGE, parsed.customCollage);
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || "Failed to parse JSON backup file." };
+    }
   };
 
   return {
@@ -491,5 +605,7 @@ export function useAppStore() {
     customCollage,
     setCustomCollage,
     resetToDefaults,
+    exportPortfolioData,
+    importPortfolioData,
   };
 }

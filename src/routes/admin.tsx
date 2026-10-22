@@ -6,7 +6,9 @@ import { getMixedTiles } from "@/components/Projects";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { CustomCursor } from "@/components/CustomCursor";
-import { Check, X, Trash2, Plus, Image as ImageIcon, Mail, Star, Lock, LogOut, RefreshCw, Edit3, UserPlus } from "lucide-react";
+import { Check, X, Trash2, Plus, Image as ImageIcon, Mail, Star, Lock, LogOut, RefreshCw, Edit3, UserPlus, Download, Upload, Loader2, Database } from "lucide-react";
+import { toast } from "sonner";
+import { compressImageFile } from "@/lib/image-compress";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -39,6 +41,8 @@ function AdminPage() {
     customCollage,
     setCustomCollage,
     resetToDefaults,
+    exportPortfolioData,
+    importPortfolioData,
   } = useAppStore();
 
   const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
@@ -49,6 +53,7 @@ function AdminPage() {
   const [authError, setAuthError] = useState<string | null>(null);
   const [loginError, setLoginError] = useState(false);
   const [activeTab, setActiveTab] = useState<"projects" | "practices" | "enquiries" | "reviews" | "collage">("projects");
+  const [isProcessingImages, setIsProcessingImages] = useState(false);
 
   // Project Editor state
   const [selectedDiscipline, setSelectedDiscipline] = useState<Discipline>("industrial");
@@ -77,16 +82,24 @@ function AdminPage() {
   const startEditProject = (idx: number, project: Project) => {
     setEditingProjectIdx(idx);
     setProjectForm({ ...project });
+    window.scrollTo({ top: 350, behavior: "smooth" });
   };
 
   const handleSaveProject = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!projectForm.title || !projectForm.location) return;
+    if (!projectForm.title.trim() || !projectForm.location.trim()) {
+      toast.error("Please provide both a project title and location.");
+      return;
+    }
+
     if (editingProjectIdx !== null) {
       updateProject(selectedDiscipline, editingProjectIdx, projectForm);
+      toast.success(`Updated "${projectForm.title}"! Changes are live across the site.`);
     } else {
       addProject(selectedDiscipline, projectForm);
+      toast.success(`Added "${projectForm.title}"! Changes are live across the site.`);
     }
+
     setEditingProjectIdx(null);
     setProjectForm({
       title: "",
@@ -98,24 +111,35 @@ function AdminPage() {
     });
   };
 
-  const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files) return;
-    Array.from(files).forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const result = ev.target?.result as string;
-        if (result) {
-          setProjectForm((prev) => ({
-            ...prev,
-            images: [...prev.images, result],
-          }));
+    if (!files || files.length === 0) return;
+
+    setIsProcessingImages(true);
+    const toastId = toast.loading(`Optimizing & attaching ${files.length} image(s)...`);
+
+    try {
+      const optimizedImages: string[] = [];
+      for (const file of Array.from(files)) {
+        const compressed = await compressImageFile(file);
+        if (compressed) {
+          optimizedImages.push(compressed);
         }
-      };
-      reader.readAsDataURL(file);
-    });
-    // Reset file input so the same file can be re-selected
-    e.target.value = "";
+      }
+
+      setProjectForm((prev) => ({
+        ...prev,
+        images: [...prev.images, ...optimizedImages],
+      }));
+
+      toast.success(`${optimizedImages.length} render(s) attached and saved!`, { id: toastId });
+    } catch (err) {
+      console.error("Image processing error:", err);
+      toast.error("Failed to process some images.", { id: toastId });
+    } finally {
+      setIsProcessingImages(false);
+      e.target.value = "";
+    }
   };
 
   const handleAddImageUrl = () => {
@@ -126,6 +150,43 @@ function AdminPage() {
       images: [...prev.images, url],
     }));
     setImageUrlInput("");
+    toast.success("Image URL added to project.");
+  };
+
+  const handleExportBackup = () => {
+    try {
+      const dataStr = exportPortfolioData();
+      const blob = new Blob([dataStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `paper-and-pencil-portfolio-backup-${new Date().toISOString().split("T")[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success("Portfolio backup downloaded successfully!");
+    } catch (err) {
+      toast.error("Failed to export backup.");
+    }
+  };
+
+  const handleImportBackup = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      const content = ev.target?.result as string;
+      if (!content) return;
+      const res = await importPortfolioData(content);
+      if (res.success) {
+        toast.success("Portfolio backup restored! All projects updated.");
+      } else {
+        toast.error(res.error || "Failed to restore backup.");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
   };
 
   const startEditPractice = (key: Discipline) => {
@@ -143,6 +204,7 @@ function AdminPage() {
     e.preventDefault();
     if (!practiceEditingKey) return;
     updatePractice(practiceEditingKey, practiceForm);
+    toast.success("Practice details updated!");
     setPracticeEditingKey(null);
   };
 
@@ -403,20 +465,38 @@ function AdminPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-emerald-950/40 border border-emerald-500/40 px-3 py-1 text-[10px] uppercase tracking-widest text-emerald-400">
+              <Database size={12} /> Limitless Storage
+            </span>
+            <button
+              onClick={handleExportBackup}
+              title="Download backup file of all projects and images"
+              className="flex items-center gap-1.5 border border-border/60 bg-ink-soft px-3 py-2 text-xs uppercase tracking-[0.2em] text-grey-soft hover:text-cream hover:border-gold"
+            >
+              <Download size={14} /> Export Backup
+            </button>
+            <label
+              title="Import backup file to restore projects"
+              className="flex items-center gap-1.5 border border-border/60 bg-ink-soft px-3 py-2 text-xs uppercase tracking-[0.2em] text-grey-soft hover:text-cream hover:border-gold cursor-pointer"
+            >
+              <Upload size={14} /> Import Backup
+              <input type="file" accept=".json" onChange={handleImportBackup} className="hidden" />
+            </label>
             <button
               onClick={() => {
                 if (confirm("Reset all stored projects, practice taglines, enquiries, and reviews to original defaults?")) {
                   resetToDefaults();
+                  toast.success("Reset to original defaults.");
                 }
               }}
-              className="flex items-center gap-2 border border-border/60 bg-ink-soft px-4 py-2 text-xs uppercase tracking-[0.2em] text-grey-soft hover:text-cream hover:border-gold"
+              className="flex items-center gap-1.5 border border-border/60 bg-ink-soft px-3 py-2 text-xs uppercase tracking-[0.2em] text-grey-soft hover:text-cream hover:border-gold"
             >
               <RefreshCw size={14} /> Reset Defaults
             </button>
             <button
               onClick={logoutAdmin}
-              className="flex items-center gap-2 border border-gold/40 bg-gold/10 px-4 py-2 text-xs uppercase tracking-[0.2em] text-gold hover:bg-gold hover:text-black"
+              className="flex items-center gap-1.5 border border-gold/40 bg-gold/10 px-4 py-2 text-xs uppercase tracking-[0.2em] text-gold hover:bg-gold hover:text-black"
             >
               <LogOut size={14} /> Log Out
             </button>
@@ -538,6 +618,7 @@ function AdminPage() {
                             if (confirm(`Delete project "${p.title}"?`)) {
                               deleteProject(selectedDiscipline, idx);
                               if (editingProjectIdx === idx) setEditingProjectIdx(null);
+                              toast.success(`Removed "${p.title}".`);
                             }
                           }}
                           className="p-2 text-grey-soft hover:text-red-400"
@@ -632,12 +713,16 @@ function AdminPage() {
                   {/* Add Image Inputs */}
                   <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                     {/* File Upload Button */}
-                    <label className="flex items-center justify-center gap-2 border border-dashed border-gold/60 bg-gold/5 p-3 cursor-pointer text-xs uppercase tracking-wider text-gold hover:bg-gold/10">
-                      <ImageIcon size={16} /> Upload Image File(s)
+                    <label className={`flex items-center justify-center gap-2 border border-dashed border-gold/60 bg-gold/5 p-3 cursor-pointer text-xs uppercase tracking-wider text-gold hover:bg-gold/10 transition-opacity ${
+                      isProcessingImages ? "opacity-50 pointer-events-none" : ""
+                    }`}>
+                      {isProcessingImages ? <Loader2 size={16} className="animate-spin text-gold" /> : <ImageIcon size={16} />}
+                      {isProcessingImages ? "Optimizing & Attaching..." : "Upload Image File(s)"}
                       <input
                         type="file"
                         accept="image/*"
                         multiple
+                        disabled={isProcessingImages}
                         className="hidden"
                         onChange={handleImageFileUpload}
                       />
