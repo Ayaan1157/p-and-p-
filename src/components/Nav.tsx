@@ -39,13 +39,13 @@ export function Nav() {
         }}
       >
         <div className="mx-auto flex max-w-[1600px] items-center justify-between px-6 md:px-12">
-          <a href="/" aria-label="Paper and Pencil — home" className="leading-none">
+          <a href="/" aria-label="Paper and Pencil — home" className="leading-none inline-flex items-center">
             <img
               src="/LOGO_transparent.png"
               alt="Paper and Pencil"
               width={320}
               height={80}
-              className="h-12 w-auto object-contain md:h-14"
+              className="h-12 w-auto object-contain md:h-14 logo-ambigram-rotate"
             />
           </a>
           

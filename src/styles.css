@@ -175,6 +175,45 @@
   }
   .animate-blink { animation: blink 1.1s step-end infinite; }
 
+  /* Ambigram logo rotation — rotates every 5s to reveal the flipped version */
+  @keyframes logoAmbigramRotate {
+    0%, 40% {
+      transform: rotate(0deg) scale(1);
+    }
+    45% {
+      transform: rotate(90deg) scale(0.72);
+    }
+    50%, 90% {
+      transform: rotate(180deg) scale(1);
+    }
+    95% {
+      transform: rotate(270deg) scale(0.72);
+    }
+    100% {
+      transform: rotate(360deg) scale(1);
+    }
+  }
+
+  .logo-ambigram-rotate {
+    display: inline-block;
+    transform-origin: center center;
+    animation: logoAmbigramRotate 11s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .logo-ambigram-rotate:hover {
+      animation-play-state: paused;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .logo-ambigram-rotate {
+      animation: none;
+    }
+  }
+
   /* Collage tiles — hover only on real pointer devices to avoid sticky states */
   .collage-tile { transform: translateZ(0); transition: transform 0.35s var(--ease-luxury), opacity 0.35s var(--ease-luxury); }
   @media (hover: hover) and (pointer: fine) {
